@@ -195,6 +195,8 @@ Campos blancos con borde `#cfdbe7`, radio de control, relleno (11px 12px) y tipo
 
 ### Navigation
 
+En móvil, la navegación cerrada no expone controles al teclado. Abierta funciona como diálogo con foco contenido, cierre visible de 44px y fondo inerte. Al cerrar devuelve el foco al botón de menú; al abrir un panel desde ella, el retorno ocurre después de cerrar ese panel. El cambio a escritorio devuelve el foco a la navegación visible.
+
 La navegación del rail combina icono, etiqueta y contador cuando corresponde. Hover tiene fondo `#edf3fa`; activo usa fondo `#e6f1fd`, texto `#0066b6` y peso (800). Las pestañas usan texto e indicador inferior azul de (2px) para la vista seleccionada. El rail móvil aparece mediante un control con nombre accesible y un velo de cierre.
 
 ### Chips

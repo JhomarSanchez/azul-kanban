@@ -1,5 +1,13 @@
 import { CommonModule } from "@angular/common";
-import { Component, inject } from "@angular/core";
+import { BreakpointObserver } from "@angular/cdk/layout";
+import {
+  afterRenderEffect,
+  Component,
+  effect,
+  inject,
+  viewChild,
+} from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { Activity } from "@features/activity/activity";
 import { BoardStore } from "@features/kanban";
 import { Board } from "@features/kanban/board";
@@ -26,4 +34,30 @@ import { Topbar } from "./topbar";
 export class WorkspaceShell {
   readonly boards = inject(BoardStore);
   readonly ui = inject(ShellState);
+  private breakpoints = inject(BreakpointObserver);
+  private topbar = viewChild(Topbar);
+  private sidebar = viewChild(Sidebar);
+  readonly viewport = toSignal(this.breakpoints.observe("(max-width: 820px)"), {
+    initialValue: {
+      matches: this.breakpoints.isMatched("(max-width: 820px)"),
+      breakpoints: {},
+    },
+  });
+  constructor() {
+    effect(() => {
+      if (!this.viewport().matches || this.ui.panel()) this.ui.railOpen.set(false);
+    });
+    let wasOpen = false;
+    let restoreNavigation = false;
+    afterRenderEffect(() => {
+      const open = this.ui.railOpen();
+      if (wasOpen && !open) restoreNavigation = true;
+      wasOpen = open;
+      if (restoreNavigation && !open && !this.ui.panel()) {
+        if (this.viewport().matches) this.topbar()?.focusMenu();
+        else this.sidebar()?.focusNavigation();
+        restoreNavigation = false;
+      }
+    });
+  }
 }

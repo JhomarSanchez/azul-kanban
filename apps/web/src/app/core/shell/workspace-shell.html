@@ -4,11 +4,14 @@
       <button
         class="rail-scrim"
         aria-label="Cerrar navegación"
+        tabindex="-1"
         (click)="ui.railOpen.set(false)"
       ></button>
     }
-    <az-sidebar />
-    <main class="main-area">
+    @if (!viewport().matches || ui.railOpen()) {
+      <az-sidebar [mobile]="viewport().matches" />
+    }
+    <main class="main-area" [inert]="(viewport().matches && ui.railOpen()) || !!ui.panel()">
       <az-topbar /><az-project-header />
       @if (boards.loading()) {
         <div class="loading-line" aria-label="Cargando proyecto"></div>

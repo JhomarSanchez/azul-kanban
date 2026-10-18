@@ -1,8 +1,11 @@
 @if (boards.board(); as b) {
   <header class="topbar">
     <button
+      #menu
       class="icon-button mobile-menu"
       aria-label="Abrir navegación"
+      aria-controls="workspace-navigation"
+      [attr.aria-expanded]="ui.railOpen()"
       (click)="ui.railOpen.set(true)"
     >
       <az-icon name="menu" />

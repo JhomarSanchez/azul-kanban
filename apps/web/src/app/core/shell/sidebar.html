@@ -1,5 +1,23 @@
 @if (boards.board(); as b) {
-  <aside class="sidebar" [class.open]="ui.railOpen()">
+  <aside
+    class="sidebar"
+    id="workspace-navigation"
+    [class.open]="ui.railOpen()"
+    [attr.role]="mobile() ? 'dialog' : null"
+    [attr.aria-modal]="mobile() ? 'true' : null"
+    aria-label="Navegación del espacio"
+    [inert]="!!ui.panel()"
+    [cdkTrapFocus]="mobile()"
+    [cdkTrapFocusAutoCapture]="mobile()"
+  >
+    @if (mobile()) {
+      <button
+        class="icon-button rail-close"
+        aria-label="Cerrar navegación"
+        cdkFocusInitial
+        (click)="ui.railOpen.set(false)"
+      ><az-icon name="close" /></button>
+    }
     <a class="brand" href="/" aria-label="Azul, inicio"
       ><span class="brand-mark"><i></i><i></i><i></i></span>azul<span
         class="brand-dot"
@@ -17,6 +35,7 @@
     <div class="nav-caption">Mi espacio</div>
     <nav aria-label="Navegación principal" class="main-nav">
       <button
+        #boardLink
         [class.active]="ui.view() === 'board'"
         (click)="ui.view.set('board'); ui.railOpen.set(false)"
       >
