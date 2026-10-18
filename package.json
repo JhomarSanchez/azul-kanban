@@ -1,0 +1,33 @@
+{
+  "name": "azul-kanban",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=24.15 <25"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @azul/contracts build && concurrently -k -n API,WEB \"pnpm --filter @azul/api dev\" \"pnpm --filter @azul/web dev\"",
+    "build": "pnpm --filter @azul/contracts build && pnpm --filter @azul/api build && pnpm --filter @azul/web build",
+    "typecheck": "pnpm --filter @azul/contracts build && pnpm --filter @azul/api typecheck && pnpm --filter @azul/web typecheck",
+    "lint": "eslint --config config/eslint.config.mjs apps packages tests --max-warnings 0",
+    "test": "pnpm --filter @azul/contracts build && pnpm --filter @azul/api test && pnpm --filter @azul/web test",
+    "test:integration": "pnpm --filter @azul/api test:integration",
+    "test:e2e": "playwright test --config config/playwright.config.ts",
+    "test:e2e:report": "playwright show-report .local/reports/playwright",
+    "db:local": "node scripts/local-db.mjs",
+    "db:generate": "pnpm --filter @azul/api exec prisma generate",
+    "db:migrate": "pnpm --filter @azul/api exec prisma migrate deploy",
+    "start": "pnpm --filter @azul/api start"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.56.0",
+    "concurrently": "^9.2.0",
+    "dotenv": "^17.2.0",
+    "embedded-postgres": "17.10.0-beta.17",
+    "eslint": "^9.39.0",
+    "pg": "^8.16.0",
+    "typescript-eslint": "^8.46.0"
+  }
+}

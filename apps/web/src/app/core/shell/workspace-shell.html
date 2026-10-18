@@ -1,0 +1,33 @@
+@if (boards.board(); as b) {
+  <div class="app-shell">
+    @if (ui.railOpen()) {
+      <button
+        class="rail-scrim"
+        aria-label="Cerrar navegación"
+        (click)="ui.railOpen.set(false)"
+      ></button>
+    }
+    <az-sidebar />
+    <main class="main-area">
+      <az-topbar /><az-project-header />
+      @if (boards.loading()) {
+        <div class="loading-line" aria-label="Cargando proyecto"></div>
+      }
+      @switch (ui.view()) {
+        @case ("board") {
+          <az-board />
+        }
+        @case ("metrics") {
+          <az-metrics />
+        }
+        @case ("activity") {
+          <az-activity />
+        }
+      }
+    </main>
+  </div>
+} @else if (boards.loading()) {
+  <main class="project-loading" aria-busy="true" aria-label="Cargando proyecto">
+    <p>Abriendo tu proyecto…</p>
+  </main>
+}

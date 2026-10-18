@@ -1,0 +1,52 @@
+@let task = taskInput();
+<button
+  class="task-main"
+  (click)="opened.emit(task)"
+  aria-describedby="board-instructions"
+>
+  <div class="task-card-top">
+    <div class="task-labels">
+      @for (label of task.labels; track label) {
+        <span [class]="'tag ' + labelClass(label)">{{ label }}</span>
+      }
+    </div>
+    <span
+      [class]="'priority-icon ' + task.priority.toLowerCase()"
+      [title]="'Prioridad ' + priorityLabels[task.priority]"
+      ><az-icon name="flag"
+    /></span>
+  </div>
+  <h3>
+    @if (done()) {
+      <az-icon name="check" />
+    }
+    {{ task.title }}
+  </h3>
+  <p>{{ task.description }}</p>
+</button>
+<footer class="task-footer">
+  <div class="task-metadata">
+    @if (task.dueDate) {
+      <span class="task-due" [class.overdue]="overdue(task)"
+        ><az-icon name="calendar" />{{ dayLabel(task.dueDate) }}</span
+      >
+    }
+    @if (task.checklist.length) {
+      <span
+        [class.check-complete]="checklistDone(task) === task.checklist.length"
+        ><az-icon name="checklist" />{{ checklistDone(task) }}/{{
+          task.checklist.length
+        }}</span
+      >
+    }
+  </div>
+  @if (task.assigneeId) {
+    <span class="avatar task-avatar" [title]="memberName(task.assigneeId)">{{
+      initials(memberName(task.assigneeId))
+    }}</span>
+  } @else {
+    <span class="unassigned" title="Sin asignar"
+      ><az-icon name="people"
+    /></span>
+  }
+</footer>

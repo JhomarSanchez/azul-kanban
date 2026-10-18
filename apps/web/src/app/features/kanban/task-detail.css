@@ -1,0 +1,130 @@
+:host {
+  display: contents;
+}
+
+.inline-form input {
+  width: 100%;
+  padding: 11px 12px;
+  background: #fff;
+  border: 1px solid #cfdbe7;
+  border-radius: 8px;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.field-row {
+  display: flex;
+  gap: 16px;
+}
+.field-row .field {
+  flex: 1;
+  margin: 0;
+}
+.inline-form input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+.title-field {
+  margin-top: 0;
+}
+.title-field input {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px;
+}
+.checklist-section {
+  margin-top: 30px;
+}
+.comments-section {
+  margin-top: 30px;
+}
+.checklist-section h3 {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 17px;
+}
+.comments-section h3 {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 17px;
+}
+.checklist-section h3 az-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+.comments-section h3 az-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+.checklist-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 12px 0;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.checklist-row input {
+  accent-color: var(--blue);
+  margin-top: 5px;
+}
+.checklist-row span {
+  flex: 1;
+}
+.checklist-row span.checked {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.inline-form {
+  display: flex;
+  border: 1px solid var(--faint);
+  border-radius: 8px;
+  align-items: center;
+  padding: 0 3px;
+  margin-top: 12px;
+}
+.inline-form input {
+  border: 0;
+  font-size: 12px;
+}
+.comments-section {
+  border-top: 1px solid var(--faint);
+  padding-top: 26px;
+}
+.comment {
+  display: flex;
+  gap: 12px;
+  margin: 19px 0;
+}
+.comment > div {
+  flex: 1;
+  min-width: 0;
+}
+.comment strong {
+  font-size: 11px;
+}
+.comment p {
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.comment small {
+  font-size: 11px;
+  color: var(--muted);
+  display: block;
+  margin-top: 4px;
+}
+@media (max-width: 420px) {
+  .field-row {
+    gap: 10px;
+  }
+}

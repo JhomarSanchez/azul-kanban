@@ -1,0 +1,176 @@
+<div class="ai-panel-intro">
+  <span class="assistant-symbol"><az-icon name="sparkle" /></span>
+  <h2>Una idea puede ser<br />un gran comienzo.</h2>
+  <p>
+    Transforma lo que tienes en mente en pasos concretos, o encuentra pistas en
+    el flujo de tu equipo.
+  </p>
+</div>
+<div class="segmented">
+  <button
+    [class.active]="ai.aiTab() === 'create'"
+    (click)="ai.aiTab.set('create')"
+  >
+    Idea → tareas</button
+  ><button
+    [class.active]="ai.aiTab() === 'analyze'"
+    (click)="ai.aiTab.set('analyze')"
+  >
+    Entender el tablero
+  </button>
+</div>
+@if (ai.aiTab() === "create") {
+  <form (ngSubmit)="ai.generate()">
+    <label class="field"
+      >¿Qué te gustaría construir?<textarea
+        name="idea"
+        [(ngModel)]="ai.idea"
+        rows="4"
+        minlength="5"
+        maxlength="2000"
+        placeholder="Por ejemplo: implementar el registro de usuarios con correo y contraseña."
+      ></textarea></label
+    ><button
+      class="button primary full-width"
+      [disabled]="
+        ai.aiLoading() || ai.idea.trim().length < 5 || !boards.canEdit()
+      "
+    >
+      <az-icon name="sparkle" />{{
+        ai.aiLoading() ? "Dando forma a tus ideas…" : "Proponer un plan"
+      }}
+    </button>
+  </form>
+  @if (ai.proposal(); as proposal) {
+    <div class="proposal-heading">
+      <h3>
+        {{ proposal.accepted ? "Del plan al tablero" : "Tu plan, a tu manera" }}
+      </h3>
+      <span class="provider-label">{{
+        proposal.provider === "simulated"
+          ? "Simulación · sin modelo conectado"
+          : "Generado con OpenAI"
+      }}</span>
+    </div>
+    <p class="muted">
+      Revisa los títulos, ajusta los detalles y elige las tareas que quieras
+      incorporar.
+    </p>
+    <div class="proposal-list">
+      @for (task of ai.proposalTasks(); track task.sourceIndex) {
+        <div class="proposal-task">
+          <div class="proposal-task-title">
+            <input
+              type="checkbox"
+              [(ngModel)]="task.selected"
+              [disabled]="proposal.accepted"
+              [attr.aria-label]="'Seleccionar ' + task.title"
+            /><input
+              class="proposal-title-input"
+              [(ngModel)]="task.title"
+              maxlength="160"
+              [readonly]="proposal.accepted"
+              aria-label="Título propuesto"
+            />
+          </div>
+          <textarea
+            [(ngModel)]="task.description"
+            rows="3"
+            maxlength="2000"
+            [readonly]="proposal.accepted"
+            aria-label="Descripción propuesta"
+          ></textarea
+          ><select
+            [(ngModel)]="task.priority"
+            [disabled]="proposal.accepted"
+            aria-label="Prioridad propuesta"
+          >
+            @for (p of ["LOW", "MEDIUM", "HIGH", "URGENT"]; track p) {
+              <option [value]="p">{{ priorityLabels[p] }}</option>
+            }
+          </select>
+          <ul>
+            @for (
+              criterion of task.acceptanceCriteria;
+              track $index;
+              let i = $index
+            ) {
+              <li>
+                <input
+                  [(ngModel)]="task.acceptanceCriteria[i]"
+                  maxlength="300"
+                  [readonly]="proposal.accepted"
+                  aria-label="Criterio propuesto"
+                />
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+    <button
+      class="button primary full-width"
+      (click)="ai.accept()"
+      [disabled]="
+        boards.pending() ||
+        proposal.accepted ||
+        ai.selectedProposalCount() === 0
+      "
+    >
+      <az-icon [name]="proposal.accepted ? 'check' : 'plus'" />{{
+        proposal.accepted
+          ? "Tareas incorporadas"
+          : "Añadir " +
+            ai.selectedProposalCount() +
+            " tareas al
+  Backlog"
+      }}
+    </button>
+  }
+} @else {
+  <p class="muted">
+    El servidor calcula los números. El asistente propone cómo explorarlos. Las
+    observaciones incluyen referencias verificables.
+  </p>
+  <button
+    class="button primary full-width"
+    (click)="ai.analyze()"
+    [disabled]="ai.aiLoading()"
+  >
+    <az-icon name="sparkle" />{{
+      ai.aiLoading() ? "Leyendo el contexto…" : "Analizar el flujo"
+    }}
+  </button>
+  @if (ai.analysis(); as analysis) {
+    <span class="provider-label analysis-provider">{{
+      analysis.provider === "simulated"
+        ? "Simulación · sin modelo conectado"
+        : "Generado con OpenAI"
+    }}</span>
+    @for (observation of analysis.observations; track $index) {
+      <article class="insight">
+        <h3><az-icon name="activity" />Una pista para explorar</h3>
+        <p>{{ observation.text }}</p>
+        <div class="evidence">
+          @for (key of observation.metricKeys; track key) {
+            <span>{{ key }}</span>
+          }
+        </div>
+        @for (id of observation.taskIds; track id) {
+          @for (task of boards.board()!.tasks; track task.id) {
+            @if (task.id === id) {
+              <button class="evidence-link" (click)="tasks.openTask(task)">
+                <az-icon name="file" />{{ task.title
+                }}<az-icon name="chevron" />
+              </button>
+            }
+          }
+        }
+      </article>
+    }
+  }
+}
+<p class="ai-note">
+  <az-icon name="help" />La IA puede equivocarse. Tú decides qué cambia en tu
+  proyecto. La demo incluye tres consultas.
+</p>

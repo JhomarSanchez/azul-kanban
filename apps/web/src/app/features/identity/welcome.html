@@ -1,0 +1,130 @@
+<main class="welcome">
+  <a class="brand" href="/"
+    ><span class="brand-mark"><i></i><i></i><i></i></span>azul<span
+      class="brand-dot"
+      >.</span
+    ></a
+  >
+  <div class="welcome-layout">
+    <div class="welcome-copy">
+      @if (workspace.invitation(); as invitation) {
+        <h1>Tu equipo te está esperando.</h1>
+        <p>
+          Te han invitado a <strong>{{ invitation.name }}</strong> como
+          {{ invitation.role === "VIEWER" ? "observador" : "miembro" }}.
+        </p>
+        <button
+          class="button primary large"
+          (click)="workspace.joinInvitation()"
+          [disabled]="session.pending()"
+        >
+          Unirme al proyecto<az-icon name="arrow" />
+        </button>
+      } @else {
+        <h1>Buenas ideas.<br />Un siguiente paso<span>.</span></h1>
+        <p>
+          Un espacio para organizar el trabajo, encontrar tu ritmo y convertir
+          ideas en tareas con inteligencia artificial.
+        </p>
+        <div class="welcome-actions">
+          <button
+            class="button primary large"
+            (click)="workspace.startDemo()"
+            [disabled]="session.pending() || workspace.loading()"
+          >
+            {{
+              session.pending()
+                ? "Preparando tu espacio…"
+                : "Explorar la
+          demo"
+            }}<az-icon name="arrow" /></button
+          ><button
+            class="button secondary large"
+            (click)="ui.panel.set('auth')"
+          >
+            Crear mi cuenta
+          </button>
+        </div>
+        <p class="welcome-note">
+          <az-icon name="check" />Sin registro. Datos de ejemplo. Un espacio
+          solo para ti.
+        </p>
+      }
+      @if (session.user() && !boards.board()) {
+        <button
+          class="text-button"
+          (click)="ui.panel.set(session.user()?.guest ? 'auth' : 'project')"
+        >
+          {{
+            session.user()?.guest
+              ? "Crear una cuenta permanente"
+              : "Crear mi
+        primer proyecto"
+          }}
+        </button>
+      }
+      <div class="welcome-features">
+        <span><az-icon name="board" />Un tablero que da claridad</span
+        ><span><az-icon name="people" />Tu equipo, conectado</span
+        ><span><az-icon name="sparkle" />IA con un propósito</span>
+      </div>
+    </div>
+    <div class="welcome-preview" aria-hidden="true">
+      <div class="preview-top">
+        <span class="preview-logo">a.</span><span>Un poco más cerca.</span
+        ><span class="preview-live"></span>
+      </div>
+      <div class="preview-board">
+        <div>
+          <h3>Ideas <span>3</span></h3>
+          <div class="preview-task">
+            <span class="tag violet">Diseño</span
+            ><strong>Dar forma al próximo gran paso</strong>
+            <div class="preview-lines"></div>
+          </div>
+          <div class="preview-task">
+            <span class="tag amber">Producto</span
+            ><strong>Escuchar a nuestro equipo</strong>
+          </div>
+        </div>
+        <div>
+          <h3>En movimiento <span>2</span></h3>
+          <div class="preview-task">
+            <span class="tag blue">Ingeniería</span
+            ><strong>Construir algo que importe</strong>
+            <div class="preview-lines"></div>
+            <span class="avatar avatar-0">LC</span>
+          </div>
+          <div class="preview-task">
+            <span class="tag teal">UX</span
+            ><strong>Hacerlo un poco más sencillo</strong>
+          </div>
+        </div>
+        <div>
+          <h3>Hecho <span>1</span></h3>
+          <div class="preview-task">
+            <span class="tag violet">Diseño</span
+            ><strong>Encontrar nuestra dirección</strong
+            ><span class="preview-done"
+              ><az-icon name="check" />Un buen comienzo</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="preview-assistant">
+        <az-icon name="sparkle" />
+        <div>
+          <strong>De la idea al plan.</strong
+          ><span>Un impulso para empezar.</span>
+        </div>
+        <az-icon name="arrow" />
+      </div>
+    </div>
+  </div>
+  <footer class="welcome-footer">
+    <span>Azul · Kanban con IA</span
+    ><button class="text-button" (click)="ui.panel.set('help')">
+      Sobre este proyecto
+    </button>
+  </footer>
+</main>

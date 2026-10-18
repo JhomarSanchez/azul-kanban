@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: azul
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-azul_local_only}
+      POSTGRES_DB: azul
+    ports:
+      - "127.0.0.1:${AZUL_DB_PORT:-55432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U azul -d azul"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:${AZUL_HTTP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://azul:${POSTGRES_PASSWORD:-azul_local_only}@postgres:5432/azul
+      APP_ORIGIN: ${DOCKER_APP_ORIGIN:-http://localhost:${AZUL_HTTP_PORT:-3000}}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.4-mini}
+      AI_MONTHLY_BUDGET_USD: ${AI_MONTHLY_BUDGET_USD:-5}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/v1/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+    command:
+      [
+        "sh",
+        "-c",
+        "node node_modules/prisma/build/index.js migrate deploy && node dist/main.js",
+      ]
+volumes:
+  postgres-data:

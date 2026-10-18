@@ -1,0 +1,56 @@
+:host {
+  display: contents;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+.main-area {
+  margin-left: 235px;
+  width: calc(100% - 235px);
+  min-width: 0;
+}
+.loading-line {
+  height: 2px;
+  background: var(--blue);
+  animation: load 1s infinite alternate;
+}
+.rail-scrim {
+  display: none;
+}
+@media (min-width: 1550px) {
+  .main-area {
+    margin-left: 252px;
+    width: calc(100% - 252px);
+  }
+}
+@media (max-width: 1190px) {
+  .main-area {
+    margin-left: 215px;
+    width: calc(100% - 215px);
+  }
+}
+@media (max-width: 820px) {
+  .rail-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: #10283b50;
+    z-index: 30;
+  }
+}
+@media (max-width: 820px) {
+  .main-area {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+.project-loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: var(--canvas);
+}

@@ -1,0 +1,247 @@
+:host {
+  display: contents;
+}
+
+.board-view {
+  padding: 0 28px 0 34px;
+}
+.board-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 86px;
+}
+.board-search {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dfe7f0;
+  background: #fff;
+  border-radius: 7px;
+  gap: 8px;
+  padding: 0 11px;
+  width: 214px;
+  height: 36px;
+}
+.board-search az-icon {
+  width: 15px;
+  height: 15px;
+  color: #60788e;
+}
+.board-search input {
+  border: 0;
+  outline: none !important;
+  background: transparent;
+  width: 100%;
+  font-size: 11px;
+  color: var(--ink);
+  padding: 9px 0;
+}
+.board-search:focus-within {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.board-search input::placeholder {
+  color: var(--muted);
+}
+.filter-button {
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid #dfe7f0;
+  min-height: 36px;
+  padding: 7px 11px;
+  background: #fff;
+}
+.filter-button az-icon {
+  width: 14px;
+  height: 14px;
+}
+.filter-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--action);
+}
+.toolbar-spacer {
+  flex: 1;
+}
+.task-total {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-right: 7px;
+}
+.task-total > span {
+  margin: 0 7px;
+  color: #7b8b9d;
+}
+.board-toolbar > .primary {
+  font-size: 11px;
+  padding: 8px 12px;
+  min-height: 36px;
+}
+.board-toolbar > .primary az-icon {
+  width: 15px;
+  height: 15px;
+}
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 0 20px;
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+.filter-row > label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.filter-row select {
+  border: 1px solid var(--faint);
+  border-radius: 6px;
+  padding: 6px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 11px;
+}
+.filter-row small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.filter-row input {
+  accent-color: var(--blue);
+}
+.board-scroll {
+  display: flex;
+  gap: 17px;
+  align-items: flex-start;
+  overflow-x: auto;
+  min-height: calc(100vh - 390px);
+  padding: 0 3px 27px;
+  scrollbar-width: thin;
+}
+.add-column {
+  border: 1px dashed #cad8e7;
+  border-radius: 8px;
+  min-height: 35px;
+  min-width: 28px;
+  color: #658099;
+  margin-top: 0;
+}
+.add-column az-icon {
+  width: 15px;
+  height: 15px;
+}
+.board-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  min-height: 50px;
+  font-size: 11px;
+  color: #63788f;
+  flex-wrap: wrap;
+}
+.board-bottom > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.board-bottom az-icon {
+  width: 12px;
+  height: 12px;
+}
+.demo-disclosure button {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  color: var(--action);
+  font-size: 11px;
+  margin-left: 8px;
+}
+@media (min-width: 1550px) {
+  .board-toolbar {
+    min-height: 92px;
+  }
+}
+@media (max-width: 1190px) {
+  .board-view {
+    padding-left: 25px;
+    padding-right: 20px;
+  }
+}
+@media (max-width: 1190px) {
+  .board-scroll {
+    gap: 14px;
+  }
+}
+@media (max-width: 1190px) {
+  .task-total {
+    display: none;
+  }
+}
+@media (max-width: 820px) {
+  .board-view {
+    padding: 0 17px 0 21px;
+  }
+}
+@media (max-width: 820px) {
+  .board-toolbar {
+    min-height: 78px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 820px) {
+  .board-search {
+    flex: 1;
+    max-width: 240px;
+    min-width: 130px;
+  }
+}
+@media (max-width: 820px) {
+  .board-toolbar .primary {
+    padding: 8px 10px;
+  }
+}
+@media (max-width: 820px) {
+  .board-scroll {
+    min-height: calc(100vh - 360px);
+  }
+}
+@media (max-width: 820px) {
+  .board-bottom {
+    padding: 12px 0;
+  }
+}
+@media (max-width: 420px) {
+  .board-search {
+    max-width: 160px;
+  }
+}
+@media (max-width: 420px) {
+  .board-toolbar > .filter-button {
+    padding: 7px 9px;
+  }
+}
+@media (max-width: 420px) {
+  .board-toolbar > .primary {
+    font-size: 11px;
+    gap: 4px;
+  }
+}
+@media (max-width: 420px) {
+  .board-toolbar > .primary az-icon {
+    width: 13px;
+  }
+}
+@media (max-width: 420px) {
+  .toolbar-spacer {
+    display: none;
+  }
+}
+@media (max-width: 420px) {
+  .board-toolbar {
+    justify-content: space-between;
+  }
+}

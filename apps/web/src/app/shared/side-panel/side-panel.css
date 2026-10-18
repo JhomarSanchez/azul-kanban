@@ -1,0 +1,63 @@
+:host {
+  display: contents;
+}
+
+.panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #122a4440;
+  z-index: 40;
+  animation: fade 0.18s var(--ease);
+}
+.side-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(520px, 100vw);
+  z-index: 50;
+  background: #fff;
+  box-shadow: -12px 0 44px -14px #1e3b5a38;
+  display: flex;
+  flex-direction: column;
+  animation: slide 0.25s var(--ease);
+}
+.side-panel.wide-panel {
+  width: min(570px, 100vw);
+}
+.panel-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--faint);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 73px;
+}
+.panel-header-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.panel-header-title az-icon {
+  color: var(--action);
+  width: 18px;
+  height: 18px;
+}
+.panel-body {
+  padding: 26px 30px 40px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+@media (max-width: 420px) {
+  .panel-body {
+    padding: 23px;
+  }
+}
+@media (max-width: 420px) {
+  .panel-header {
+    padding: 17px 20px;
+  }
+}

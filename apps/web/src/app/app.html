@@ -1,0 +1,10 @@
+<az-toast />
+@if (
+  workspace.session.user() &&
+  (workspace.board.board() || workspace.board.loading())
+) {
+  <az-workspace-shell />
+} @else {
+  <az-welcome />
+}
+<az-panel-outlet />

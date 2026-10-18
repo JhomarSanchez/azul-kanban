@@ -1,0 +1,81 @@
+<h2>Un espacio para cada persona.</h2>
+<p class="muted">Comparte el proyecto y mantén al equipo en la misma página.</p>
+<div class="member-list">
+  @for (member of boards.board()!.members; track member.id) {
+    <div class="member-row">
+      <span class="avatar">{{ initials(member.name) }}</span
+      ><strong>{{ member.name }}</strong>
+      @if (boards.isOwner() && member.role !== "OWNER") {
+        <select
+          [ngModel]="member.role"
+          (ngModelChange)="team.changeMember(member.userId, $event)"
+          [disabled]="boards.pending()"
+          [attr.aria-label]="'Rol de ' + member.name"
+        >
+          <option value="MEMBER">Miembro</option>
+          <option value="VIEWER">Observador</option></select
+        ><button
+          class="tiny-button"
+          [attr.aria-label]="'Quitar acceso de ' + member.name"
+          (click)="team.removeMember(member.userId)"
+          [disabled]="boards.pending()"
+        >
+          <az-icon name="close" />
+        </button>
+      } @else {
+        <small>{{
+          member.role === "OWNER"
+            ? "Propietario"
+            : member.role === "VIEWER"
+              ? "Observador"
+              : "Miembro"
+        }}</small>
+      }
+    </div>
+  }
+</div>
+@if (boards.isOwner()) {
+  <hr />
+  <label class="field"
+    >Permisos de la invitación<select [(ngModel)]="team.inviteRole">
+      <option value="MEMBER">Miembro · puede editar tareas</option>
+      <option value="VIEWER">Observador · solo lectura</option>
+    </select></label
+  ><button
+    class="button primary"
+    (click)="team.createInvite()"
+    [disabled]="boards.pending()"
+  >
+    <az-icon name="link" />Crear enlace
+  </button>
+  @if (team.inviteUrl()) {
+    <label class="field invitation-link"
+      >Enlace de invitación<input
+        [value]="team.inviteUrl()"
+        readonly
+        aria-label="Enlace de invitación" /></label
+    ><button class="button secondary" (click)="team.copyInvite()">
+      Copiar enlace
+    </button>
+    <p class="muted">
+      {{
+        boards.board()!.project.demo
+          ? "Caduca junto con esta demo. Puedes abrirlo
+  en otro navegador para probar la colaboración."
+          : "Caduca en siete días. Quien
+  tenga el enlace podrá solicitar acceso con su cuenta."
+      }}
+    </p>
+  }
+  <button
+    class="text-button revoke-link"
+    (click)="team.revokeInvites()"
+    [disabled]="boards.pending()"
+  >
+    Revocar todos los enlaces anteriores
+  </button>
+  <p class="muted">
+    Si retiras a alguien del equipo, revoca también los enlaces que hayas
+    compartido para evitar que vuelva a usarlos.
+  </p>
+}

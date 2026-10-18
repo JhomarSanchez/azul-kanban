@@ -1,0 +1,109 @@
+@if (boards.board(); as b) {
+  <section class="board-view" aria-label="Tablero Kanban">
+    <div class="board-toolbar">
+      <div class="board-search">
+        <az-icon name="search" /><input
+          aria-label="Buscar tareas"
+          placeholder="Buscar tareas..."
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+        />
+      </div>
+      <button
+        class="button filter-button"
+        [class.filter-active]="showFilters() || priority() || mine()"
+        (click)="showFilters.set(!showFilters())"
+      >
+        <az-icon name="filter" />Filtros
+        @if (priority() || mine()) {
+          <span class="filter-dot"></span>
+        }
+      </button>
+      <div class="toolbar-spacer"></div>
+      <span class="task-total"
+        >{{ boards.counts().total }} tareas <span>·</span>
+        {{ boards.counts().done }} completadas</span
+      >
+      @if (boards.canEdit()) {
+        <button
+          class="button primary"
+          (click)="tasks.newTask()"
+          [disabled]="boards.pending()"
+        >
+          <az-icon name="plus" />Nueva tarea
+        </button>
+      }
+    </div>
+    @if (showFilters()) {
+      <div class="filter-row">
+        <label
+          >Prioridad<select
+            aria-label="Filtrar por prioridad"
+            [ngModel]="priority()"
+            (ngModelChange)="priority.set($event)"
+          >
+            <option value="">Todas las prioridades</option>
+            @for (p of ["LOW", "MEDIUM", "HIGH", "URGENT"]; track p) {
+              <option [value]="p">{{ priorityLabels[p] }}</option>
+            }
+          </select></label
+        ><label class="checkbox-label"
+          ><input
+            type="checkbox"
+            [ngModel]="mine()"
+            (ngModelChange)="mine.set($event)"
+          />Solo mis tareas</label
+        ><button
+          class="text-button"
+          (click)="search.set(''); priority.set(''); mine.set(false)"
+        >
+          Limpiar filtros</button
+        ><small>Con filtros activos, mueve las tareas desde su detalle.</small>
+      </div>
+    }
+    <p id="board-instructions" class="sr-only">
+      Abre una tarea con Enter. En el detalle puedes moverla a otra columna
+      mediante el selector de estado.
+    </p>
+    <div class="board-scroll" cdkDropListGroup>
+      @for (column of boards.board()!.columns; track column.id) {
+        <az-board-column
+          [columnInput]="column"
+          [tasks]="tasksFor(column.id)"
+          [count]="boards.countFor(column.id)"
+          [members]="boards.board()!.members"
+          [canEdit]="boards.canEdit()"
+          [isOwner]="boards.isOwner()"
+          [disabled]="dragDisabled()"
+          [filtered]="filtered()"
+          (taskOpened)="tasks.openTask($event)"
+          (taskCreated)="tasks.newTask($event)"
+          (columnEdited)="columns.editColumn($event)"
+          (taskDropped)="drop($event, column.id)"
+          (dragStarted)="boards.startDrag()"
+          (dragEnded)="boards.endDrag()"
+        />
+      }
+      @if (boards.isOwner()) {
+        <button
+          class="add-column"
+          (click)="columns.editColumn()"
+          aria-label="Añadir columna"
+        >
+          <az-icon name="plus" />
+        </button>
+      }
+    </div>
+    <footer class="board-bottom">
+      <span><az-icon name="check" />Cada pequeño avance cuenta.</span>
+      @if (b.project.demo) {
+        <span class="demo-disclosure"
+          >Datos de ejemplo · Tu demo caduca en 24 h<button
+            (click)="ui.panel.set('help')"
+          >
+            Más información<az-icon name="chevron" /></button
+        ></span>
+      }
+    </footer>
+  </section>
+}

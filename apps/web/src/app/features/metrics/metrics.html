@@ -1,0 +1,80 @@
+<section class="analytics-view">
+  <div class="section-heading">
+    <div>
+      <h2>Encuentra el ritmo de tu equipo</h2>
+      <p>Datos del tablero. Últimos 28 días · America/Bogota.</p>
+    </div>
+    <button class="button secondary" (click)="ai.openAi('analyze')">
+      <az-icon name="sparkle" />Interpretar con IA
+    </button>
+  </div>
+  @if (store.metrics(); as m) {
+    <div class="metric-strip">
+      <div>
+        <span>Tiempo de ciclo</span><strong>{{ duration(m.cycleTime) }}</strong
+        ><small>Mediana de la entrega inicial</small>
+      </div>
+      <div>
+        <span>Tiempo de entrega</span><strong>{{ duration(m.leadTime) }}</strong
+        ><small>Desde creación a finalización</small>
+      </div>
+      <div>
+        <span>Trabajo en curso</span
+        ><strong>{{ m.wip }} <small>tareas</small></strong
+        ><small>Incluye tareas en revisión</small>
+      </div>
+      <div>
+        <span>Entregas iniciales</span><strong>{{ m.sampleSize }}</strong
+        ><small>{{ m.reopens }} reaperturas registradas</small>
+      </div>
+    </div>
+    <div class="charts-grid">
+      <section class="chart-panel">
+        <h3>Entregas por semana</h3>
+        <p>Primera finalización de cada tarea</p>
+        <div
+          class="bar-chart"
+          role="img"
+          [attr.aria-label]="
+            'Entregas iniciales en el periodo: ' + m.sampleSize
+          "
+        >
+          @for (week of m.throughput; track week.week) {
+            <div class="bar-group">
+              <span class="bar-value">{{ week.count }}</span>
+              <div class="bar-track">
+                <div
+                  class="bar"
+                  [style.height.%]="store.barHeight(week.count)"
+                ></div>
+              </div>
+              <span>{{ dayLabel(week.week + "T12:00:00Z") }}</span>
+            </div>
+          }
+        </div>
+      </section>
+      <section class="chart-panel">
+        <h3>Tiempo por columna</h3>
+        <p>Permanencia acumulada, incluidas las esperas</p>
+        <div class="horizontal-chart">
+          @for (column of m.columnTime; track column.id) {
+            <div>
+              <span>{{ column.name }}</span
+              ><strong>{{ duration(column.hours) }}</strong>
+              <div class="horizontal-track">
+                <div [style.width.%]="store.columnWidth(column.hours)"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+    <p class="metrics-footnote">
+      <az-icon name="help" />Los tiempos son horas transcurridas, no horas de
+      programación. Las reaperturas no alteran la primera entrega. Muestra:
+      {{ m.sampleSize }} tareas.
+    </p>
+  } @else {
+    <div class="empty-state">Estamos calculando las métricas.</div>
+  }
+</section>

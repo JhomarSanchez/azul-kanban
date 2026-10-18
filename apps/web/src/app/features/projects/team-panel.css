@@ -1,0 +1,58 @@
+:host {
+  display: contents;
+}
+
+.member-row select {
+  width: 100%;
+  padding: 11px 12px;
+  background: #fff;
+  border: 1px solid #cfdbe7;
+  border-radius: 8px;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.member-list {
+  margin-top: 25px;
+}
+.member-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+}
+.member-row > strong {
+  font-size: 11px;
+  flex: 1;
+}
+.member-row > small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.member-row select {
+  width: 105px;
+  font-size: 11px;
+  padding: 6px;
+}
+.invitation-link {
+  margin-top: 24px;
+}
+.invitation-link input {
+  font-size: 11px;
+  background: #f5f8fc;
+}
+@media (max-width: 420px) {
+  .member-row > strong {
+    font-size: 11px;
+  }
+}
+@media (max-width: 420px) {
+  .member-row select {
+    width: 92px;
+  }
+}
+.revoke-link {
+  display: block;
+  margin-top: 20px;
+}

@@ -1,0 +1,73 @@
+@if (boards.board(); as b) {
+  <div class="project-heading">
+    <div>
+      <div class="project-title-row">
+        <h1>{{ b.project.name }}</h1>
+        <span class="privacy"
+          ><az-icon name="lock" />{{
+            b.project.demo ? "Demo" : "Privado"
+          }}</span
+        >
+      </div>
+      <p>
+        {{
+          b.project.description ||
+            "Dale claridad a tu trabajo, un paso a la
+      vez."
+        }}
+      </p>
+    </div>
+    <div class="project-actions">
+      <div class="avatar-stack" aria-label="Miembros del proyecto">
+        @for (
+          member of b.members.slice(0, 4);
+          track member.id;
+          let i = $index
+        ) {
+          <span
+            class="avatar"
+            [class]="'avatar avatar-' + i"
+            [title]="member.name"
+            >{{ initials(member.name) }}</span
+          >
+        }
+      </div>
+      <button
+        class="button secondary invite-button"
+        (click)="team.inviteUrl.set(''); ui.panel.set('invite')"
+      >
+        <az-icon name="people" />{{ boards.isOwner() ? "Invitar" : "Equipo" }}
+      </button>
+    </div>
+  </div>
+  <div class="view-tabs" role="tablist" aria-label="Vistas del proyecto">
+    <button
+      role="tab"
+      [attr.aria-selected]="ui.view() === 'board'"
+      [class.active]="ui.view() === 'board'"
+      (click)="ui.view.set('board')"
+    >
+      <az-icon name="board" />Tablero
+    </button>
+    <button
+      role="tab"
+      [attr.aria-selected]="ui.view() === 'metrics'"
+      [class.active]="ui.view() === 'metrics'"
+      (click)="ui.view.set('metrics')"
+    >
+      <az-icon name="chart" />Métricas
+    </button>
+    <button
+      role="tab"
+      [attr.aria-selected]="ui.view() === 'activity'"
+      [class.active]="ui.view() === 'activity'"
+      (click)="ui.view.set('activity')"
+    >
+      <az-icon name="activity" />Actividad
+    </button>
+    <div class="tab-spacer"></div>
+    <button class="ai-inline" (click)="ai.openAi()">
+      <az-icon name="sparkle" />Asistente IA<span class="new-label">NUEVO</span>
+    </button>
+  </div>
+}

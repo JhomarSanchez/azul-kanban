@@ -1,0 +1,12 @@
+@if (notices.notice(); as n) {
+  <div class="toast" [class.error]="n.error" role="status" aria-live="polite">
+    <az-icon [name]="n.error ? 'help' : 'check'" /><span>{{ n.message }}</span
+    ><button
+      class="icon-button"
+      aria-label="Cerrar mensaje"
+      (click)="notices.notice.set(null)"
+    >
+      <az-icon name="close" />
+    </button>
+  </div>
+}

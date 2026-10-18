@@ -1,0 +1,28 @@
+<h2>¿Qué vamos a hacer realidad?</h2>
+<p class="muted">
+  Empieza con un nombre. El resto lo construiremos paso a paso.
+</p>
+<form (ngSubmit)="createProject()">
+  <label class="field"
+    >Nombre del proyecto<input
+      name="projectName"
+      [(ngModel)]="projectName"
+      required
+      minlength="2"
+      maxlength="80"
+      placeholder="Mi próximo proyecto" /></label
+  ><label class="field"
+    >Descripción<textarea
+      name="projectDescription"
+      [(ngModel)]="projectDescription"
+      rows="3"
+      maxlength="500"
+      placeholder="El propósito que nos reúne."
+    ></textarea></label
+  ><button
+    class="button primary"
+    [disabled]="workspace.session.pending() || projectName.trim().length < 2"
+  >
+    Crear proyecto<az-icon name="arrow" />
+  </button>
+</form>

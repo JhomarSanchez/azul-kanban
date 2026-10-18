@@ -1,0 +1,58 @@
+<h2>
+  {{
+    columns.editingColumnId
+      ? "Un flujo más claro."
+      : "Un nuevo paso en el
+  flujo."
+  }}
+</h2>
+<form (ngSubmit)="columns.saveColumn()">
+  <label class="field"
+    >Nombre<input
+      name="columnName"
+      [(ngModel)]="columns.columnName"
+      required
+      maxlength="40" /></label
+  ><label class="field"
+    >Categoría<select
+      name="columnCategory"
+      [(ngModel)]="columns.columnCategory"
+      [disabled]="!!columns.editingColumnId"
+    >
+      <option value="TODO">Pendiente</option>
+      <option value="ACTIVE">Trabajo activo</option>
+      <option value="DONE">Terminado</option></select
+    ><small
+      >La categoría se conserva para que el historial sea consistente.</small
+    ></label
+  ><label class="field"
+    >Límite de tareas WIP<input
+      type="number"
+      name="columnLimit"
+      [(ngModel)]="columns.columnLimit"
+      min="1"
+      max="100"
+      placeholder="Sin límite"
+    /><small
+      >Al alcanzarlo, termina o mueve una tarea antes de añadir otra.</small
+    ></label
+  >
+  <div class="form-actions">
+    <button
+      class="button primary"
+      [disabled]="boards.pending() || !columns.columnName.trim()"
+    >
+      Guardar columna
+    </button>
+    @if (columns.editingColumnId) {
+      <button
+        class="button danger-quiet"
+        type="button"
+        (click)="columns.deleteColumn()"
+        [disabled]="boards.pending()"
+      >
+        Eliminar columna vacía
+      </button>
+    }
+  </div>
+</form>

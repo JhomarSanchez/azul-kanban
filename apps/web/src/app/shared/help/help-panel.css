@@ -1,0 +1,40 @@
+:host {
+  display: contents;
+}
+
+.tour-list {
+  padding-left: 22px;
+  margin: 28px 0;
+}
+.tour-list li {
+  padding: 10px 0 16px 7px;
+}
+.tour-list strong {
+  font-size: 14px;
+}
+.tour-list p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.9;
+  margin-top: 7px;
+}
+.disclosure {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
+  background: #edf4fc;
+  border-radius: 10px;
+  margin: 25px 0;
+}
+.disclosure az-icon {
+  color: var(--action);
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+}
+.disclosure p {
+  font-size: 11px;
+  line-height: 1.9;
+  color: #385e84;
+}

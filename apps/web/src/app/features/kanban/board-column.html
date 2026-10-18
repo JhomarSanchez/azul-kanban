@@ -1,0 +1,85 @@
+@let column = columnInput();
+<section class="kanban-column" [attr.aria-label]="column.name">
+  <header class="column-heading">
+    <span
+      class="column-dot"
+      [class]="'column-dot category-' + column.category.toLowerCase()"
+    ></span>
+    <h2>{{ column.name }}</h2>
+    <span
+      class="column-count"
+      [class.full]="
+        column.wipLimit !== null && countFor(column.id) >= column.wipLimit
+      "
+      >{{ countFor(column.id) }}
+      @if (column.wipLimit) {
+        <span>/ {{ column.wipLimit }}</span>
+      }
+    </span>
+    <div class="column-heading-space"></div>
+    @if (isOwner()) {
+      <button
+        class="tiny-button column-settings"
+        [attr.aria-label]="'Configurar columna ' + column.name"
+        (click)="columnEdited.emit(column.id)"
+      >
+        <az-icon name="more" />
+      </button>
+    }
+    @if (canEdit()) {
+      <button
+        class="tiny-button"
+        [attr.aria-label]="'Añadir tarea a ' + column.name"
+        (click)="taskCreated.emit(column.id)"
+      >
+        <az-icon name="plus" />
+      </button>
+    }
+  </header>
+  <div
+    class="task-list"
+    cdkDropList
+    [id]="column.id"
+    [cdkDropListData]="tasksFor(column.id)"
+    (cdkDropListDropped)="onDrop($event, column.id)"
+  >
+    @for (task of tasksFor(column.id); track task.id) {
+      <article
+        class="task-card"
+        [class.completed]="column.category === 'DONE'"
+        cdkDrag
+        [cdkDragData]="task"
+        [cdkDragDisabled]="disabled()"
+        (cdkDragStarted)="onDragStarted($event)"
+        (cdkDragEnded)="dragEnded.emit()"
+        [attr.data-task-id]="task.id"
+      >
+        <az-task-card
+          [taskInput]="task"
+          [members]="members()"
+          [done]="column.category === 'DONE'"
+          (opened)="taskOpened.emit($event)"
+        />
+        <div
+          class="drag-placeholder"
+          *cdkDragPlaceholder
+          [style.height.px]="dragHeight"
+        ></div>
+      </article>
+    } @empty {
+      <div class="column-empty">
+        {{
+          filtered()
+            ? "Sin coincidencias"
+            : "Hay espacio para el siguiente
+      paso."
+        }}
+      </div>
+    }
+  </div>
+  @if (canEdit()) {
+    <button class="add-task" (click)="taskCreated.emit(column.id)">
+      <az-icon name="plus" />Añadir tarea
+    </button>
+  }
+</section>

@@ -1,0 +1,36 @@
+<section class="activity-view">
+  <div class="section-heading">
+    <div>
+      <h2>El trabajo también cuenta una historia</h2>
+      <p>Los últimos 50 cambios del proyecto.</p>
+    </div>
+  </div>
+  <div class="activity-feed">
+    @for (event of store.activity(); track event.id) {
+      <div class="activity-row">
+        <span class="activity-event-icon"
+          ><az-icon
+            [name]="
+              event.type === 'task.created'
+                ? 'plus'
+                : event.type === 'task.commented'
+                  ? 'comment'
+                  : 'store.activity'
+            "
+        /></span>
+        <div>
+          <p>
+            <strong>{{ event.actor }}</strong>
+            {{ activityLabels[event.type] || "actualizó el tablero" }}
+          </p>
+          <span>{{ event.title }}</span>
+        </div>
+        <time [attr.datetime]="event.createdAt" [title]="event.createdAt">{{
+          relativeDate(event.createdAt)
+        }}</time>
+      </div>
+    } @empty {
+      <div class="empty-state">Tu historia empieza con la primera tarea.</div>
+    }
+  </div>
+</section>

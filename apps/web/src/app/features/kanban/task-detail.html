@@ -1,0 +1,183 @@
+<form (ngSubmit)="detail.saveTask()" class="task-form">
+  <label class="field title-field"
+    >Título<input
+      name="title"
+      [(ngModel)]="detail.taskForm.title"
+      required
+      maxlength="160"
+      placeholder="¿Cuál es el siguiente paso?"
+      [readonly]="!boards.canEdit()"
+  /></label>
+  @if (detail.selected(); as task) {
+    <label class="field"
+      >Estado<select
+        aria-label="Mover tarea a columna"
+        [ngModel]="task.columnId"
+        name="state"
+        (ngModelChange)="boards.move(task, $event)"
+        [disabled]="!boards.canEdit() || boards.pending()"
+      >
+        @for (column of boards.board()!.columns; track column.id) {
+          <option [value]="column.id">{{ column.name }}</option>
+        }
+      </select></label
+    >
+  } @else {
+    <label class="field"
+      >Columna<select name="column" [(ngModel)]="detail.taskForm.columnId">
+        @for (column of boards.board()!.columns; track column.id) {
+          <option [value]="column.id">{{ column.name }}</option>
+        }
+      </select></label
+    >
+  }
+  <label class="field"
+    >Descripción<textarea
+      name="description"
+      [(ngModel)]="detail.taskForm.description"
+      rows="4"
+      maxlength="6000"
+      placeholder="Un poco de contexto ayuda a avanzar."
+      [readonly]="!boards.canEdit()"
+    ></textarea>
+  </label>
+  <div class="field-row">
+    <label class="field"
+      >Prioridad<select
+        name="priority"
+        [(ngModel)]="detail.taskForm.priority"
+        [disabled]="!boards.canEdit()"
+      >
+        @for (priority of ["LOW", "MEDIUM", "HIGH", "URGENT"]; track priority) {
+          <option [value]="priority">{{ priorityLabels[priority] }}</option>
+        }
+      </select></label
+    ><label class="field"
+      >Fecha límite<input
+        type="date"
+        name="dueDate"
+        [(ngModel)]="detail.taskForm.dueDate"
+        [readonly]="!boards.canEdit()"
+    /></label>
+  </div>
+  <label class="field"
+    >Responsable<select
+      name="assignee"
+      [(ngModel)]="detail.taskForm.assigneeId"
+      [disabled]="!boards.canEdit()"
+    >
+      <option value="">Sin asignar</option>
+      @for (member of boards.board()!.members; track member.id) {
+        <option [value]="member.userId">{{ member.name }}</option>
+      }
+    </select></label
+  >
+  <label class="field"
+    >Etiquetas<input
+      name="labels"
+      [(ngModel)]="detail.taskForm.labels"
+      placeholder="Diseño, Producto"
+      [readonly]="!boards.canEdit()"
+    /><small>Separa las etiquetas con comas.</small></label
+  >
+  <div class="checklist-section">
+    <h3><az-icon name="checklist" />Criterios y pasos</h3>
+    @for (item of detail.taskForm.checklist; track item.id; let i = $index) {
+      <div class="checklist-row">
+        <input
+          type="checkbox"
+          [name]="'check' + item.id"
+          [(ngModel)]="item.done"
+          [disabled]="!boards.canEdit()"
+          [attr.aria-label]="item.text"
+        /><span [class.checked]="item.done">{{ item.text }}</span>
+        @if (boards.canEdit()) {
+          <button
+            class="tiny-button"
+            type="button"
+            aria-label="Quitar criterio"
+            (click)="detail.taskForm.checklist.splice(i, 1)"
+          >
+            <az-icon name="close" />
+          </button>
+        }
+      </div>
+    }
+    @if (boards.canEdit()) {
+      <div class="inline-form">
+        <input
+          name="checklistNew"
+          [(ngModel)]="detail.checklistText"
+          placeholder="Añadir un paso…"
+          maxlength="300"
+          aria-label="Nuevo criterio"
+          (keydown.enter)="$event.preventDefault(); detail.addChecklist()"
+        /><button
+          class="icon-button"
+          type="button"
+          aria-label="Añadir criterio"
+          (click)="detail.addChecklist()"
+        >
+          <az-icon name="plus" />
+        </button>
+      </div>
+    }
+  </div>
+  @if (boards.canEdit()) {
+    <div class="form-actions">
+      <button
+        class="button primary"
+        type="submit"
+        [disabled]="boards.pending() || !detail.taskForm.title.trim()"
+      >
+        {{ boards.pending() ? "Guardando…" : "Guardar tarea" }}
+      </button>
+      @if (detail.selected()) {
+        <button
+          class="button danger-quiet"
+          type="button"
+          (click)="detail.archiveTask()"
+          [disabled]="boards.pending()"
+        >
+          <az-icon name="archive" />Archivar
+        </button>
+      }
+    </div>
+  }
+</form>
+@if (detail.selected()) {
+  <section class="comments-section">
+    <h3><az-icon name="comment" />Conversación</h3>
+    @for (comment of detail.comments(); track comment.id) {
+      <div class="comment">
+        <span class="avatar task-avatar">{{
+          initials(comment.authorName)
+        }}</span>
+        <div>
+          <strong>{{ comment.authorName }}</strong>
+          <p>{{ comment.text }}</p>
+          <small>{{ relativeDate(comment.createdAt) }}</small>
+        </div>
+      </div>
+    } @empty {
+      <p class="muted">El contexto también se construye conversando.</p>
+    }
+    @if (boards.canEdit()) {
+      <label class="field"
+        ><span class="sr-only">Escribir comentario</span
+        ><textarea
+          [(ngModel)]="detail.commentText"
+          rows="2"
+          maxlength="2000"
+          placeholder="Comparte un avance o una pregunta…"
+        ></textarea></label
+      ><button
+        class="button secondary"
+        (click)="detail.addComment()"
+        [disabled]="boards.pending() || !detail.commentText.trim()"
+      >
+        Comentar
+      </button>
+    }
+  </section>
+}

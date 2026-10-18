@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-17T23:55:27.031Z",
+  "title": "Design System: Azul",
+  "extensions": {
+    "colorMeta": {
+      "blue": {
+        "role": "primary",
+        "displayName": "Azul Windows"
+      },
+      "action": {
+        "role": "primary",
+        "displayName": "Azul de acción"
+      },
+      "blue-pale": {
+        "role": "primary",
+        "displayName": "Azul suave"
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Lienzo frío"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Blanco de trabajo"
+      },
+      "rail": {
+        "role": "neutral",
+        "displayName": "Rail claro"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Texto secundario"
+      },
+      "faint": {
+        "role": "neutral",
+        "displayName": "Borde tenue"
+      },
+      "green": {
+        "role": "semantic",
+        "displayName": "Confirmación"
+      },
+      "amber": {
+        "role": "semantic",
+        "displayName": "Advertencia"
+      },
+      "red": {
+        "role": "semantic",
+        "displayName": "Peligro"
+      },
+      "violet": {
+        "role": "semantic",
+        "displayName": "Clasificación violeta"
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Cabecera de proyecto",
+        "purpose": "Contexto principal del proyecto; escala adaptable."
+      },
+      "title": {
+        "displayName": "Título de tarea",
+        "purpose": "Lectura de la tarjeta sin reducir tamaño en móvil."
+      },
+      "body": {
+        "displayName": "Descripción",
+        "purpose": "Texto breve de tarjeta y lectura auxiliar."
+      },
+      "label": {
+        "displayName": "Etiqueta",
+        "purpose": "Clasificación compacta del contenido."
+      },
+      "control": {
+        "displayName": "Campo",
+        "purpose": "Texto editable en formularios."
+      }
+    },
+    "shadows": [
+      {
+        "name": "task-hover",
+        "value": "0 5px 13px -8px #44668545",
+        "purpose": "Respuesta al hover de tarjeta."
+      },
+      {
+        "name": "task-drag",
+        "value": "0 12px 28px -10px #233f6450",
+        "purpose": "Separar la tarjeta arrastrada."
+      },
+      {
+        "name": "side-panel",
+        "value": "-12px 0 44px -14px #1e3b5a38",
+        "purpose": "Panel lateral sobre contexto visible."
+      },
+      {
+        "name": "toast",
+        "value": "0 8px 30px -8px #12315150",
+        "purpose": "Aviso flotante."
+      },
+      {
+        "name": "secondary-border",
+        "value": "inset 0 0 0 1px #dce4ee",
+        "purpose": "Borde interior del botón secundario."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Curva compartida para rail, panel y arrastre."
+      },
+      {
+        "name": "control-transition",
+        "value": "0.16s",
+        "purpose": "Fondo y color de botón; borde y sombra de tarjeta."
+      },
+      {
+        "name": "backdrop-entry",
+        "value": "0.18s",
+        "purpose": "Entrada del velo."
+      },
+      {
+        "name": "drag-transition",
+        "value": "0.2s",
+        "purpose": "Reordenación y rail móvil."
+      },
+      {
+        "name": "panel-entry",
+        "value": "0.25s",
+        "purpose": "Entrada lateral del panel."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "Sin animaciones ni transiciones con prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide",
+        "value": "1550px"
+      },
+      {
+        "name": "compact-desktop",
+        "value": "1190px"
+      },
+      {
+        "name": "mobile-rail",
+        "value": "820px"
+      },
+      {
+        "name": "small-mobile",
+        "value": "420px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal con fondo azul y texto blanco.",
+      "html": "<button class=\"ds-button-primary\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14 M5 12h14\"/></svg>Nueva tarea</button>",
+      "css": ".ds-button-primary{font-family:Manrope,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:39px;padding:9px 15px;border:0;border-radius:8px;font-size:12px;font-weight:700;line-height:1.5;white-space:nowrap;cursor:pointer;transition:background .16s,color .16s;background:var(--action,#0067b8);color:var(--surface,#fff)}.ds-button-primary:hover:not(:disabled){background:#00579d}.ds-button-primary:disabled{opacity:.5;cursor:not-allowed}.ds-button-primary:focus-visible{outline:3px solid var(--blue,#0078d4);outline-offset:3px}"
+    },
+    {
+      "name": "Botón secundario",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Acción auxiliar con borde interior.",
+      "html": "<button class=\"ds-button-secondary\">Comentar</button>",
+      "css": ".ds-button-secondary{font-family:Manrope,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:39px;padding:9px 15px;border:0;border-radius:8px;font-size:12px;font-weight:700;line-height:1.5;white-space:nowrap;cursor:pointer;transition:background .16s,color .16s;background:var(--surface,#fff);color:var(--ink,#152a43);box-shadow:inset 0 0 0 1px #dce4ee}.ds-button-secondary:hover:not(:disabled){background:#f2f7fd}.ds-button-secondary:disabled{opacity:.5;cursor:not-allowed}.ds-button-secondary:focus-visible{outline:3px solid var(--blue,#0078d4);outline-offset:3px}"
+    },
+    {
+      "name": "Acción de texto",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "Acción contextual como limpiar filtros.",
+      "html": "<button class=\"ds-button-text\">Limpiar filtros</button>",
+      "css": ".ds-button-text{font-family:Manrope,sans-serif;border:0;background:none;color:var(--action,#0067b8);font-weight:700;font-size:12px;min-height:32px;cursor:pointer}.ds-button-text:focus-visible{outline:3px solid var(--blue,#0078d4);outline-offset:3px}"
+    },
+    {
+      "name": "Acción destructiva",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Acción tranquila para archivar una tarea.",
+      "html": "<button class=\"ds-button-danger\">Archivar</button>",
+      "css": ".ds-button-danger{font-family:Manrope,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:39px;padding:9px 15px;border:0;border-radius:8px;font-size:12px;font-weight:700;line-height:1.5;white-space:nowrap;cursor:pointer;transition:background .16s,color .16s;background:none;color:var(--red,#b42332)}.ds-button-danger:disabled{opacity:.5;cursor:not-allowed}.ds-button-danger:focus-visible{outline:3px solid var(--blue,#0078d4);outline-offset:3px}"
+    },
+    {
+      "name": "Botón de icono",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "Control compacto con nombre accesible.",
+      "html": "<button class=\"ds-button-icon\" aria-label=\"Cerrar panel\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 6 12 12 M18 6 6 18\"/></svg></button>",
+      "css": ".ds-button-icon{display:inline-flex;align-items:center;justify-content:center;width:33px;height:33px;border:0;border-radius:7px;background:none;color:var(--muted,#52677d);cursor:pointer}.ds-button-icon:hover{background:#e9f0f8;color:var(--ink,#152a43)}.ds-button-icon:focus-visible{outline:3px solid var(--blue,#0078d4);outline-offset:3px}"
+    },
+    {
+      "name": "Campo de texto",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Etiqueta encima y control de formulario blanco.",
+      "html": "<label class=\"ds-field\">Título<input class=\"ds-input\" placeholder=\"Título de la tarea\" /></label>",
+      "css": ".ds-field{font-family:Manrope,sans-serif;display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:700;color:var(--ink,#152a43);margin:21px 0}.ds-input{font-family:Manrope,sans-serif;width:100%;min-width:0;padding:11px 12px;background:var(--surface,#fff);border:1px solid #cfdbe7;border-radius:8px;color:var(--ink,#152a43);font-weight:500;font-size:13px;line-height:1.6;caret-color:var(--blue,#0078d4)}.ds-input::placeholder{color:#657a90;opacity:1}.ds-input:focus-visible{outline:3px solid var(--blue,#0078d4);outline-offset:3px}"
+    },
+    {
+      "name": "Navegación del rail",
+      "kind": "nav",
+      "refersTo": "navigation-item",
+      "description": "Elemento activo y elemento disponible del rail.",
+      "html": "<nav class=\"ds-navigation\" aria-label=\"Navegación principal\"><button class=\"ds-nav-item ds-nav-active\" aria-current=\"page\">Tablero</button><button class=\"ds-nav-item\">Métricas</button></nav>",
+      "css": ".ds-navigation{padding:0 14px}.ds-nav-item{font-family:Manrope,sans-serif;display:flex;gap:12px;align-items:center;width:100%;padding:11px 13px;margin-bottom:5px;border:0;border-radius:7px;background:none;font-size:12px;font-weight:600;text-align:left;color:var(--muted,#52677d);cursor:pointer}.ds-nav-item:hover{background:#edf3fa}.ds-nav-item.ds-nav-active{color:#0066b6;background:#e6f1fd;font-weight:800}.ds-nav-item:focus-visible{outline:3px solid var(--blue,#0078d4);outline-offset:3px}"
+    },
+    {
+      "name": "Etiqueta de categoría",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Clasificación de contenido sin interacción.",
+      "html": "<span class=\"ds-tag\">Ingeniería</span>",
+      "css": ".ds-tag{font-family:Manrope,sans-serif;display:inline-block;font-size:11px;font-weight:700;padding:3px 7px;border-radius:4px;line-height:1.5;white-space:nowrap;background:#e8f2ff;color:#3065a0}"
+    },
+    {
+      "name": "Tarjeta de tarea",
+      "kind": "card",
+      "refersTo": "task-card",
+      "description": "Tarjeta con título operativo y descripción breve.",
+      "html": "<article class=\"ds-task-card\"><button class=\"ds-task-main\"><div class=\"ds-task-top\"><span class=\"ds-task-tag\">Ingeniería</span></div><h3 class=\"ds-task-title\">Persistir cambios del tablero</h3><p class=\"ds-task-description\">Guardar cada cambio y mostrar su estado.</p></button><div class=\"ds-task-footer\"><span class=\"ds-task-meta\">0/3 criterios</span><span class=\"ds-task-avatar\">A</span></div></article>",
+      "css": ".ds-task-card{font-family:Manrope,sans-serif;background:var(--surface,#fff);border:1px solid #e0e7f0;border-radius:12px;overflow:hidden;transition:border-color .16s,box-shadow .16s}.ds-task-card:hover{border-color:#b8cde2;box-shadow:0 5px 13px -8px #44668545}.ds-task-main{font-family:Manrope,sans-serif;display:block;text-align:left;width:100%;padding:14px 14px 0;border:0;background:none;cursor:pointer}.ds-task-top{display:flex;gap:6px;margin-bottom:11px;min-height:20px}.ds-task-tag{font-size:11px;font-weight:700;padding:3px 7px;border-radius:4px;line-height:1.5;background:#e8f2ff;color:#3065a0}.ds-task-title{margin:0;font-size:14px;line-height:1.8;font-weight:700;color:#20364f;overflow-wrap:anywhere}.ds-task-description{margin:6px 0 0;font-size:12px;line-height:1.9;color:#65758b;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.ds-task-footer{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:14px 14px 0;padding:10px 0 11px;border-top:1px solid #f0f3f7}.ds-task-meta{font-size:11px;color:#64788f;font-variant-numeric:tabular-nums}.ds-task-avatar{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:50%;background:#e9e4f5;color:#6b5489;font-size:11px;font-weight:800}.ds-task-main:focus-visible{outline:3px solid var(--blue,#0078d4);outline-offset:3px}"
+    },
+    {
+      "name": "Panel lateral",
+      "kind": "custom",
+      "refersTo": "side-panel",
+      "description": "Cabecera y cuerpo de la superficie revisable; ejemplo local sin posicionamiento fijo.",
+      "html": "<section class=\"ds-side-panel\" aria-label=\"Detalle de tarea\"><header class=\"ds-panel-header\"><span class=\"ds-panel-label\">Detalle de tarea</span><button class=\"ds-panel-close\" aria-label=\"Cerrar panel\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 6 12 12 M18 6 6 18\"/></svg></button></header><div class=\"ds-panel-body\"><h2>Trabajo visible</h2><p>Revisa los detalles antes de guardar.</p></div></section>",
+      "css": ".ds-side-panel{font-family:Manrope,sans-serif;width:min(520px,100%);background:var(--surface,#fff);color:var(--ink,#152a43);box-shadow:-12px 0 44px -14px #1e3b5a38;display:flex;flex-direction:column}.ds-panel-header{padding:20px 24px;border-bottom:1px solid var(--faint,#e1e8f0);display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:73px}.ds-panel-label{font-size:12px;font-weight:700}.ds-panel-close{display:inline-flex;align-items:center;justify-content:center;width:33px;height:33px;border:0;border-radius:7px;background:none;color:var(--muted,#52677d);cursor:pointer}.ds-panel-close:hover{background:#e9f0f8;color:var(--ink,#152a43)}.ds-panel-body{padding:26px 30px 40px;overflow:auto;overscroll-behavior:contain}.ds-panel-body h2{font-size:27px;line-height:1.45;letter-spacing:-.7px;font-weight:800;margin:0 0 10px}.ds-panel-body p{font-size:13px;line-height:1.9;margin:0}.ds-panel-close:focus-visible{outline:3px solid var(--blue,#0078d4);outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Trabajo visible y propuestas revisables",
+    "overview": "Azul es una herramienta de trabajo (Operate) construida desde código. La dirección aceptada combina azul inspirado en Windows 11, blanco y una densidad adecuada para uso frecuente en escritorio y complementario en móvil. La superficie permite leer tareas y operar sobre ellas con una jerarquía constante.\n\nLas tarjetas y columnas pertenecen al propio mundo Kanban. El gesto distintivo es el panel lateral revisable: tarea y asistente conservan el tablero como contexto. Manrope autoalojada, iconos SVG de trazo uniforme y movimiento breve acompañan acciones concretas.",
+    "keyCharacteristics": [
+      "Azul para acción, selección y foco sobre superficies claras.",
+      "Tarjetas legibles con título, descripción breve y metadatos separados.",
+      "Panel lateral que conserva el contexto del tablero.",
+      "Interacción por teclado y alternativa visible al arrastre."
+    ],
+    "rules": [
+      {
+        "name": "The Acción azul Rule",
+        "body": "Reservar el azul de acción para controles y estados interactivos; mantener blanco y neutros como superficies de lectura.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lectura antes que densidad Rule",
+        "body": "Mantener títulos de tarea de 14px, descripciones de 12px y metadatos operativos de al menos 11px; no comprimirlos al reducir el ancho.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "Do mantener azul de acción, blanco y neutros con los roles documentados.",
+      "Do conservar títulos de tarea de 14px, cuerpo de 12px y metadatos operativos de al menos 11px.",
+      "Do conservar foco visible, nombres accesibles y alternativa al arrastre.",
+      "Do mantener identificados la demo y el proveedor simulado.",
+      "Do representar el cero sin barra y mantener el valor textual visible.",
+      "Do comprobar tablero, panel de tarea, propuestas, métricas, error, vacío y móvil al extender el sistema."
+    ],
+    "donts": [
+      "Don't usar solo el color para comunicar estado o prioridad.",
+      "Don't trasladar la escala de bienvenida a las tarjetas de trabajo.",
+      "Don't añadir altura mínima a barras de conteo cero.",
+      "Don't declarar conformidad WCAG sin auditoría; contraste, teclado y pruebas automatizadas son evidencia parcial."
+    ]
+  }
+}

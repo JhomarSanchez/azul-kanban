@@ -1,0 +1,165 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  OWNER
+  MEMBER
+  VIEWER
+}
+enum Category {
+  TODO
+  ACTIVE
+  DONE
+}
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model User {
+  id String @id @default(uuid())
+  name String
+  email String? @unique
+  passwordHash String?
+  guest Boolean @default(false)
+  createdAt DateTime @default(now())
+  sessions Session[]
+  memberships Membership[]
+}
+model Session {
+  id String @id
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  csrf String
+  expiresAt DateTime
+  @@index([expiresAt])
+}
+model Project {
+  id String @id @default(uuid())
+  name String
+  description String @default("")
+  version Int @default(0)
+  demo Boolean @default(false)
+  expiresAt DateTime?
+  aiRequests Int @default(0)
+  createdAt DateTime @default(now())
+  members Membership[]
+  invitations Invitation[]
+  columns Column[]
+  tasks Task[]
+  events Activity[]
+  proposals AiProposal[]
+  runs AiRun[]
+  @@index([expiresAt])
+}
+model Membership {
+  id String @id @default(uuid())
+  userId String
+  projectId String
+  role Role
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@unique([userId, projectId])
+}
+model Invitation {
+  id String @id
+  projectId String
+  role Role
+  expiresAt DateTime
+  revoked Boolean @default(false)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+model Column {
+  id String @id @default(uuid())
+  projectId String
+  name String
+  category Category
+  position Int
+  wipLimit Int?
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks Task[]
+  @@index([projectId, position])
+}
+model Task {
+  id String @id @default(uuid())
+  projectId String
+  columnId String
+  title String
+  description String @default("")
+  priority Priority @default(MEDIUM)
+  position Int
+  labels Json @default("[]")
+  checklist Json @default("[]")
+  assigneeId String?
+  dueDate DateTime?
+  archived Boolean @default(false)
+  createdAt DateTime @default(now())
+  firstStartedAt DateTime?
+  firstCompletedAt DateTime?
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  column Column @relation(fields: [columnId], references: [id])
+  comments Comment[]
+  @@index([projectId, columnId, position])
+}
+model Comment {
+  id String @id @default(uuid())
+  taskId String
+  authorId String
+  authorName String
+  text String
+  createdAt DateTime @default(now())
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+model Activity {
+  id String @id @default(uuid())
+  projectId String
+  version Int
+  taskId String?
+  type String
+  actor String
+  title String
+  payload Json @default("{}")
+  createdAt DateTime @default(now())
+  publishedAt DateTime?
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@index([projectId, createdAt])
+  @@index([publishedAt])
+}
+model AiProposal {
+  id String @id @default(uuid())
+  projectId String
+  provider String
+  tasks Json
+  acceptedAt DateTime?
+  acceptedIds Json?
+  createdAt DateTime @default(now())
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+model AiRun {
+  id String @id @default(uuid())
+  projectId String
+  model String
+  provider String
+  kind String
+  promptVersion String
+  status String
+  reservedUsd Float @default(0)
+  costUsd Float?
+  inputTokens Int?
+  outputTokens Int?
+  durationMs Int?
+  createdAt DateTime @default(now())
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@index([createdAt])
+}
+model AiBudget {
+  month String @id
+  reservedUsd Float @default(0)
+}

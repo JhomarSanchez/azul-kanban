@@ -1,0 +1,24 @@
+{
+  "eslint.workingDirectories": ["."],
+  "eslint.options": {
+    "overrideConfigFile": "config/eslint.config.mjs"
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.angular": true,
+    "**/coverage": true,
+    "apps/api/generated": true,
+    ".local": true,
+    ".impeccable": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.angular": true,
+    "**/coverage": true,
+    "apps/api/generated": true,
+    ".local": true,
+    ".impeccable": true
+  }
+}

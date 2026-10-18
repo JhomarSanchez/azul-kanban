@@ -1,0 +1,50 @@
+@if (boards.board(); as b) {
+  <header class="topbar">
+    <button
+      class="icon-button mobile-menu"
+      aria-label="Abrir navegación"
+      (click)="ui.railOpen.set(true)"
+    >
+      <az-icon name="menu" />
+    </button>
+    <div class="breadcrumbs">
+      <span>Mis proyectos</span><az-icon name="chevron" /><strong>{{
+        b.project.name
+      }}</strong>
+    </div>
+    <div class="topbar-right">
+      <span
+        class="connection"
+        [class.offline]="boards.realtime.connection() !== 'connected'"
+        ><span></span
+        >{{
+          boards.realtime.connection() === "connected"
+            ? "En tiempo
+      real"
+            : boards.realtime.connection() === "connecting"
+              ? "Conectando"
+              : "Sin conexión en vivo"
+        }}</span
+      ><button
+        class="icon-button"
+        aria-label="Actualizar tablero"
+        title="Actualizar tablero"
+        (click)="boards.refresh()"
+        [disabled]="boards.refreshing()"
+        [attr.aria-busy]="boards.refreshing()"
+      >
+        <az-icon
+          name="refresh"
+          [class.refreshing]="boards.refreshing()"
+        /></button
+      ><span class="topbar-divider"></span
+      ><button
+        class="avatar profile-avatar"
+        aria-label="Abrir opciones de cuenta"
+        (click)="ui.panel.set('auth')"
+      >
+        {{ initials(session.user()!.name) }}
+      </button>
+    </div>
+  </header>
+}

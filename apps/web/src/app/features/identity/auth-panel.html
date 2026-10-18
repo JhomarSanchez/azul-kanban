@@ -1,0 +1,74 @@
+<h2>
+  {{
+    authMode === "register"
+      ? "Dale un lugar a tus ideas."
+      : "Qué bueno verte de
+  nuevo."
+  }}
+</h2>
+<p class="muted">
+  {{
+    session.user()?.guest
+      ? "Tu demo es temporal. Una cuenta te permite crear
+  proyectos permanentes separados de esta muestra."
+      : "Organiza el trabajo y
+  compártelo con tu equipo."
+  }}
+</p>
+<div class="segmented">
+  <button
+    [class.active]="authMode === 'register'"
+    (click)="authMode = 'register'"
+  >
+    Crear cuenta</button
+  ><button [class.active]="authMode === 'login'" (click)="authMode = 'login'">
+    Iniciar sesión
+  </button>
+</div>
+<form (ngSubmit)="authenticate()">
+  @if (authMode === "register") {
+    <label class="field"
+      >Tu nombre<input
+        name="name"
+        [(ngModel)]="authName"
+        required
+        minlength="2"
+        maxlength="80"
+        autocomplete="name"
+    /></label>
+  }
+  <label class="field"
+    >Correo electrónico<input
+      name="email"
+      [(ngModel)]="authEmail"
+      required
+      type="email"
+      autocomplete="email" /></label
+  ><label class="field"
+    >Contraseña<input
+      name="password"
+      [(ngModel)]="authPassword"
+      required
+      type="password"
+      minlength="10"
+      maxlength="128"
+      [attr.autocomplete]="
+        authMode === 'register' ? 'new-password' : 'current-password'
+      "
+    /><small>Al menos diez caracteres.</small></label
+  ><button class="button primary full-width" [disabled]="session.pending()">
+    {{
+      session.pending()
+        ? "Un momento…"
+        : authMode === "register"
+          ? "Crear mi
+    cuenta"
+          : "Entrar a mi espacio"
+    }}
+  </button>
+</form>
+@if (session.user()) {
+  <button class="text-button logout-link" (click)="workspace.logout()">
+    Cerrar sesión actual
+  </button>
+}

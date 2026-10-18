@@ -1,0 +1,40 @@
+@if (ui.panel(); as panel) {
+  <az-side-panel
+    [title]="title()"
+    [label]="
+      panel === 'task'
+        ? 'Detalle de tarea'
+        : panel === 'ai'
+          ? 'Asistente IA'
+          : 'Opciones de Azul'
+    "
+    [icon]="icon()"
+    [wide]="panel === 'ai'"
+    [busy]="busy()"
+    (closed)="ui.close()"
+  >
+    @switch (panel) {
+      @case ("task") {
+        <az-task-detail />
+      }
+      @case ("ai") {
+        <az-ai-panel />
+      }
+      @case ("invite") {
+        <az-team-panel />
+      }
+      @case ("project") {
+        <az-project-editor />
+      }
+      @case ("column") {
+        <az-column-editor />
+      }
+      @case ("auth") {
+        <az-auth-panel />
+      }
+      @default {
+        <az-help-panel />
+      }
+    }
+  </az-side-panel>
+}

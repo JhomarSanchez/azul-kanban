@@ -1,0 +1,92 @@
+@if (boards.board(); as b) {
+  <aside class="sidebar" [class.open]="ui.railOpen()">
+    <a class="brand" href="/" aria-label="Azul, inicio"
+      ><span class="brand-mark"><i></i><i></i><i></i></span>azul<span
+        class="brand-dot"
+        >.</span
+      ></a
+    >
+    <div class="workspace">
+      <span class="workspace-symbol">A</span>
+      <div>
+        <strong>Espacio de trabajo</strong
+        ><span>{{ b.project.demo ? "Demo personal" : "Tu equipo" }}</span>
+      </div>
+      <az-icon name="down" />
+    </div>
+    <div class="nav-caption">Mi espacio</div>
+    <nav aria-label="Navegación principal" class="main-nav">
+      <button
+        [class.active]="ui.view() === 'board'"
+        (click)="ui.view.set('board'); ui.railOpen.set(false)"
+      >
+        <az-icon name="board" />Tablero<span class="nav-count">{{
+          boards.counts().total
+        }}</span>
+      </button>
+      <button
+        [class.active]="ui.view() === 'metrics'"
+        (click)="ui.view.set('metrics'); ui.railOpen.set(false)"
+      >
+        <az-icon name="chart" />Métricas de flujo
+      </button>
+      <button
+        [class.active]="ui.view() === 'activity'"
+        (click)="ui.view.set('activity'); ui.railOpen.set(false)"
+      >
+        <az-icon name="activity" />Actividad
+      </button>
+    </nav>
+    <div class="nav-caption projects-caption">
+      <span>Proyectos</span
+      ><button
+        class="tiny-button"
+        aria-label="Crear proyecto"
+        (click)="ui.panel.set(session.user()?.guest ? 'auth' : 'project')"
+      >
+        <az-icon name="plus" />
+      </button>
+    </div>
+    <nav aria-label="Proyectos" class="project-nav">
+      @for (project of workspace.projects.projects(); track project.id) {
+        <button
+          [class.selected]="project.id === b.project.id"
+          (click)="workspace.openProject(project.id)"
+        >
+          <span class="project-square"></span><span>{{ project.name }}</span>
+        </button>
+      }
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="assistant-entry" (click)="ai.openAi()">
+        <span class="assistant-symbol"><az-icon name="sparkle" /></span
+        ><span
+          ><strong>Un impulso para tus ideas</strong
+          ><small>Planifica con tu asistente IA</small></span
+        ><az-icon name="chevron" />
+      </button>
+      <button class="help-link" (click)="ui.panel.set('help')">
+        <az-icon name="help" />Una vuelta por Azul<az-icon name="chevron" />
+      </button>
+      <div class="profile">
+        <span class="avatar profile-avatar">{{
+          initials(session.user()!.name)
+        }}</span>
+        <div>
+          <strong>{{ session.user()!.name }}</strong
+          ><span>{{
+            session.user()!.guest ? "Explorando Azul" : session.user()!.email
+          }}</span>
+        </div>
+        <button
+          class="icon-button"
+          aria-label="Cerrar sesión"
+          title="Cerrar sesión"
+          (click)="workspace.logout()"
+        >
+          <az-icon name="logout" />
+        </button>
+      </div>
+    </div>
+  </aside>
+}
