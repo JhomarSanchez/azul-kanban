@@ -1,5 +1,5 @@
 import { ProjectInput } from "@azul/contracts";
-import { Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { z } from "zod";
 import { Database } from "../../infrastructure/database";
 import { projectView } from "./project-view";
@@ -51,6 +51,11 @@ export class ProjectsService {
     });
   }
   async createForActor(userId: string, input: z.infer<typeof ProjectInput>) {
+    const user = await this.db.user.findUnique({ where: { id: userId } });
+    if (!user || user.guest)
+      throw new ForbiddenException(
+        "Crea una cuenta para guardar proyectos permanentes.",
+      );
     return projectView(await this.create(userId, input), "OWNER");
   }
 }

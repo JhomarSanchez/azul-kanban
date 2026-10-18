@@ -291,6 +291,12 @@ describe("PostgreSQL integration", () => {
     const b = request.agent(app.getHttpServer());
     const da = (await a.post("/api/v1/demo").send({}).expect(201)).body;
     const dbb = (await b.post("/api/v1/demo").send({}).expect(201)).body;
+    const projectCount = await db.project.count();
+    await a.post("/api/v1/projects")
+      .set("X-CSRF-Token", da.csrf)
+      .send({ name: "Permanente sin cuenta", description: "" })
+      .expect(403);
+    expect(await db.project.count()).toBe(projectCount);
     expect(da.projectId).not.toBe(dbb.projectId);
     await b.get(`/api/v1/projects/${da.projectId}/board`).expect(404);
     for (let i = 0; i < 3; i++)

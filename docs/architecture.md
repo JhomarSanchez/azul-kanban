@@ -38,6 +38,8 @@ Esta refactorización conserva rutas REST, respuestas, cookies, eventos Socket.I
 
 Contraseñas Argon2id; token de sesión aleatorio, solo su hash en base de datos. Cookie HttpOnly, Secure en producción, SameSite=Lax. CSRF por token de sesión y comprobación de origen en mutaciones. Roles OWNER/MEMBER/VIEWER por proyecto, comprobados en HTTP y suscripción socket. Revocar membresía desconecta sus sockets del proyecto.
 
+Crear proyectos permanentes requiere una cuenta registrada. El servicio comprueba el usuario persistido y rechaza sesiones invitadas con 403; las demos siguen su ruta de creación aislada con caducidad y cuota propias.
+
 ## Datos y métricas
 
 Columnas TODO/ACTIVE/DONE. Eventos inmutables guardan fecha, categoría y nombre de columna para no depender de renombrados. Primera entrada a ACTIVE y primera finalización definen el ciclo inicial; creación a primera finalización define entrega. Reaperturas se cuentan aparte. Throughput cuenta primeras finalizaciones por semana en America/Bogota. Duración por columna suma intervalos, incluido el actual; archivo mantiene historial. Métricas sin muestra devuelven null.
