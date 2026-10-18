@@ -6,7 +6,6 @@ const browser = await chromium.launch();
 const context = await browser.newContext({
   viewport: { width: 1600, height: 1040 },
   deviceScaleFactor: 1,
-  recordVideo: { dir: "docs/media", size: { width: 1600, height: 1040 } },
   reducedMotion: "reduce",
 });
 const page = await context.newPage();
@@ -29,11 +28,11 @@ if (
     .getByRole("button", { name: "Cerrar mensaje", exact: true })
     .click();
 await page.waitForTimeout(1000);
-await page.screenshot({
-  path: ".impeccable/review/desktop.png",
-  fullPage: true,
-});
+// A full-page capture cuts the sticky rail; a taller viewport shows the whole board.
+await page.setViewportSize({ width: 1600, height: 1400 });
+await page.screenshot({ path: ".impeccable/review/desktop.png" });
 copyFileSync(".impeccable/review/desktop.png", "docs/media/board.png");
+await page.setViewportSize({ width: 1600, height: 1040 });
 await page
   .getByRole("button")
   .filter({
@@ -71,16 +70,13 @@ const overflow = await page.evaluate(() => ({
   width: innerWidth,
   documentWidth: document.documentElement.scrollWidth,
 }));
-const video = page.video();
 await context.close();
-if (video) await video.saveAs("docs/media/demo.webm");
 await browser.close();
 console.log(
   JSON.stringify({
     errors,
     overflow,
     captures: ["desktop", "task", "metrics", "ai", "mobile"],
-    video: "docs/media/demo.webm",
   }),
 );
 if (errors.length) process.exitCode = 1;
