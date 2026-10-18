@@ -1,12 +1,38 @@
+# Dependencias y compilaciones
 node_modules/
 dist/
 .angular/
 coverage/
+*.tsbuildinfo
+apps/api/generated/
+
+# Secretos: solo se versiona la plantilla sin credenciales
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Datos locales, informes y grabaciones (ver docs/structure.md)
 .local/
+playwright-report/
+test-results/
+blob-report/
 *.log
-apps/api/generated/
+
+# Ajustes locales de herramientas de diseño y asistentes de IA
 .impeccable/config.local.json
 .impeccable/review/
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Editores y sistema operativo
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,69 +1,71 @@
-# Azul · Kanban con IA
+# Azul · Kanban colaborativo con IA
 
-Un proyecto de portafolio full stack para **planificar → colaborar → medir → mejorar**. Angular 22, NestJS 12 y PostgreSQL 17, con sincronización Socket.IO y propuestas de IA que se revisan antes de convertirse en tareas.
+Aplicación full stack para **planificar → colaborar → medir → mejorar**: un tablero Kanban compartido en tiempo real, con métricas de flujo calculadas en el servidor y un asistente de IA que propone tareas que una persona revisa antes de crearlas.
 
-## Dónde está cada cosa
+![Angular 22](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white)
+![NestJS 12](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)
+![PostgreSQL 17](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-4-010101?logo=socketdotio&logoColor=white)
 
-```text
-apps/
-  web/                Interfaz Angular
-  api/                Backend NestJS y esquema de base de datos
-packages/contracts/   Contratos compartidos entre frontend y backend
-tests/e2e/            Pruebas del recorrido completo en navegador
-config/               Configuración de ESLint y Playwright
-scripts/              Base local, capturas y grabación de la demo
-docs/                 Arquitectura, decisiones, roadmap y material de portafolio
+![Tablero de Azul con datos de demostración](docs/media/board.png)
+
+> Proyecto de portafolio. Los datos de la demo son sintéticos y, sin una clave de OpenAI, el asistente usa una simulación determinista que se identifica como tal en la interfaz.
+
+## Qué demuestra
+
+| Aspecto | Cómo se resuelve | Dónde mirarlo |
+|---|---|---|
+| Concurrencia sin sobrescrituras | Cada comando envía la versión esperada del tablero; la escritura, el historial y el evento de salida se guardan en una misma transacción. Un conflicto devuelve 409. | [board-transaction.service.ts](apps/api/src/modules/kanban/board-transaction.service.ts) |
+| Tiempo real fiable | Socket.IO solo avisa de cambios; el cliente recarga el estado autorizado por REST. Un outbox en PostgreSQL republica tras reinicios. | [collaboration.gateway.ts](apps/api/src/modules/collaboration/collaboration.gateway.ts), [board-store.ts](apps/web/src/app/features/kanban/board-store.ts) |
+| Arrastre sin parpadeo | El movimiento pendiente es una proyección visual separada del estado confirmado; un resultado incierto se verifica sin reenviar el comando. | [movement.ts](apps/web/src/app/features/kanban/movement.ts), [ADR 0003](docs/adr/0003-feature-boundaries-and-pending-moves.md) |
+| IA que propone, personas que deciden | Salidas estructuradas validadas con Zod, propuestas editables, aceptación idempotente y presupuesto mensual reservado antes de cada llamada. | [ai.service.ts](apps/api/src/modules/ai/ai.service.ts), [ai-budget.service.ts](apps/api/src/modules/ai/ai-budget.service.ts) |
+| Métricas reproducibles | Ciclo, entrega, throughput semanal en America/Bogota, WIP y permanencia por columna como funciones puras, con reaperturas contadas aparte. | [metrics-calculation.ts](apps/api/src/modules/metrics/metrics-calculation.ts) |
+| Seguridad | Argon2id, sesiones opacas guardadas como hash, cookie HttpOnly, CSRF y comprobación de origen; roles comprobados en HTTP y en sockets. | [identity](apps/api/src/modules/identity), [project-access.service.ts](apps/api/src/modules/projects/project-access.service.ts) |
+| Arquitectura modular | Monolito modular: módulos NestJS por funcionalidad y Angular en `core`, `shared` y `features`. ESLint impide que los controladores accedan a la base de datos. | [Arquitectura](docs/architecture.md), [ADR 0001](docs/adr/0001-modular-monolith.md) |
+
+## Funcionalidades
+
+- **Proyectos y equipo:** cuentas con correo y contraseña, roles de propietario, miembro y observador, e invitaciones por enlace con caducidad y revocación.
+- **Tablero:** columnas configurables con límites WIP, tareas con prioridad, etiquetas, responsable, fecha límite, criterios de aceptación y comentarios. Las tareas se mueven arrastrando o desde un selector accesible por teclado.
+- **Colaboración:** cambios visibles en otros navegadores sin recargar, recuperación al reconectar y conflictos explicados en lugar de perdidos.
+- **Métricas e historial:** panel de flujo y actividad cronológica; archivar una tarea conserva su historial.
+- **Asistente IA:** convierte una idea en tareas revisables y analiza el flujo del tablero con referencias a tareas y métricas reales.
+- **Demo sin registro:** cada visitante recibe un proyecto aislado con datos sintéticos que caduca a las 24 horas.
+
+| Métricas | Asistente IA | Móvil |
+|---|---|---|
+| ![Métricas de flujo](docs/media/metrics.png) | ![Propuesta del asistente IA](docs/media/ai.png) | ![Tablero en móvil](docs/media/mobile.png) |
+
+[Ver el vídeo del recorrido](docs/media/demo.webm) (WebM, se descarga para reproducirlo).
+
+## Arquitectura
+
+```mermaid
+flowchart LR
+  Angular -->|REST /api/v1: consultas y comandos| NestJS
+  NestJS -->|Socket.IO: avisos de cambio| Angular
+  NestJS -->|Prisma: estado, historial y outbox| PostgreSQL[(PostgreSQL 17)]
+  NestJS -->|Responses API| OpenAI
 ```
 
-Empieza por `apps/web` para la interfaz o `apps/api` para el servidor. El [mapa del repositorio](docs/structure.md) explica los archivos de configuración y las carpetas generadas. `PRODUCT.md`, `DESIGN.md` y `AGENTS.md` permanecen en la raíz como contexto para las herramientas de asistencia; el resto de la documentación se consulta desde el [índice de documentación](docs/README.md).
+Una sola instancia de NestJS sirve la interfaz Angular, la API REST y Socket.IO bajo el mismo origen. PostgreSQL es la fuente de verdad y no se necesita Redis para una instancia. Los contratos compartidos son esquemas Zod puros en `packages/contracts`.
 
-## Probar localmente
+La [documentación técnica](docs/README.md) recoge la [arquitectura](docs/architecture.md), las [decisiones (ADR)](docs/adr/), el [mapa del repositorio](docs/structure.md) y el [estado del proyecto](docs/roadmap.md).
 
-Requisitos: Node.js 24.15+ de la línea 24 y pnpm 12.14. Puedes usar `npx --yes pnpm@12.14.0` en lugar de `pnpm` en todos los comandos.
+| Capa | Tecnología |
+|---|---|
+| Frontend | Angular 22 standalone, Signals, Angular CDK (arrastre y accesibilidad), CSS propio con tokens |
+| Backend | NestJS 12 sobre Node.js 24, Socket.IO 4, OpenAPI |
+| Datos | PostgreSQL 17, Prisma 7 |
+| IA | SDK oficial de OpenAI, Responses API con salidas estructuradas |
+| Contratos | Zod 4 compartido entre frontend y backend |
+| Pruebas | Jest, Vitest, Playwright |
+| Operación | Docker multi-stage, Docker Compose, GitHub Actions |
 
-```powershell
-npm install --global pnpm@12.14.0
-pnpm install --frozen-lockfile
-Copy-Item .env.example .env  # solo la primera vez; no sobrescribir credenciales existentes
-pnpm db:generate
-```
+## Calidad y pruebas
 
-En una terminal deja PostgreSQL local funcionando:
-
-```powershell
-pnpm db:local
-```
-
-En otra terminal:
-
-```powershell
-pnpm db:migrate
-pnpm dev
-```
-
-Abre [Azul en local](http://127.0.0.1:4200). `APP_ORIGIN` debe coincidir exactamente con el origen del navegador; el valor predeterminado es `http://127.0.0.1:4200`. La documentación de la API está en [Swagger](http://127.0.0.1:4200/api/docs), bajo el mismo origen para permitir pruebas interactivas con sesión y CSRF.
-
-La opción local utiliza binarios reales de PostgreSQL 17, limitados a `127.0.0.1:55432`. El wrapper de desarrollo `embedded-postgres` tiene versión beta; no forma parte del backend de producción. Los datos viven en `.local/postgres`. También puedes usar cualquier PostgreSQL 17 mediante `DATABASE_URL` o iniciar solo la base de datos con `docker compose up -d postgres`. No inicies a la vez dos bases sobre el mismo puerto.
-
-## Recorrido de demostración
-
-1. Pulsa **Explorar la demo**. Se crea un proyecto aislado con tareas e historial sintéticos; caduca a las 24 horas.
-2. Crea una tarea, añade criterios, comentarios y responsable. Muévela arrastrando o mediante el selector de estado en su detalle.
-3. Usa **Invitar** para generar un enlace. Ábrelo en otro navegador o ventana privada: los cambios aparecen en ambos tableros.
-4. Visita **Métricas** para consultar entregas, tiempos y trabajo en curso.
-5. Abre **Asistente IA**, escribe una idea, edita las propuestas y acepta una selección. Sin clave se muestra una simulación determinista identificada.
-
-Una cuenta normal comienza sin datos ficticios y permite proyectos permanentes. La cuenta no convierte ni migra la demo. Miembros pueden editar, observadores pueden consultar y propietarios administran el equipo. Los enlaces de invitación caducan; se puede retirar acceso a miembros desde el panel de equipo.
-
-## IA real y consumo
-
-Configura `OPENAI_API_KEY` solo en el entorno del backend. `OPENAI_MODEL` comienza en `gpt-5.4-mini`; se usa Responses API con salidas estructuradas, sin guardar la respuesta en OpenAI (`store:false`). Reinicia la API al cambiar variables.
-
-El límite de admisión inicial es USD 5/mes para IA, separado del alojamiento. Precios por millón de tokens se configuran en `.env`; verifícalos contra el proveedor antes de habilitar la clave. El ledger reserva coste conservador antes de llamar y ajusta al uso confirmado. Errores sin uso confirmado conservan la reserva. No hay reintentos pagados automáticos. Los límites locales no sustituyen controles de facturación del proveedor.
-
-La demo permite tres solicitudes por proyecto; hay límites adicionales por usuario e IP. La IA no modifica tareas directamente. No contiene RAG, predicciones de fechas ni clasificación de productividad personal.
-
-## Verificación
+Verificado el 2026-10-18: typecheck, ESLint y compilación correctos; **29 pruebas unitarias**, **14 de integración** sobre PostgreSQL real y **14 recorridos de navegador**. Estos cubren sincronización entre dos navegadores, revocación de acceso, arrastre con la respuesta retenida, conflictos y WIP, móvil y teclado. El detalle y los límites de la verificación están en el [roadmap](docs/roadmap.md).
 
 ```powershell
 pnpm typecheck
@@ -72,7 +74,7 @@ pnpm test
 pnpm build
 ```
 
-Las pruebas de integración modifican únicamente una base dedicada cuyo nombre termina en `_test`:
+Las pruebas de integración solo modifican una base dedicada cuyo nombre termina en `_test`:
 
 ```powershell
 $env:DATABASE_URL='postgresql://azul:azul_local_only@127.0.0.1:55432/azul_test'
@@ -81,53 +83,67 @@ pnpm test:integration
 Remove-Item Env:DATABASE_URL
 ```
 
-Con la aplicación y la base arrancadas:
+Con la aplicación y la base en marcha:
 
 ```powershell
 pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Las pruebas de navegador están en `tests/e2e`. Sus informes, trazas y vídeos se guardan en `.local/reports/`; puedes abrir el informe con `pnpm test:e2e:report`. Las pruebas unitarias y de integración de la API permanecen junto al código que verifican.
+Los informes se guardan en `.local/reports/`; ábrelos con `pnpm test:e2e:report`. Jest se ejecuta con `--experimental-vm-modules` porque NestJS 12 usa dependencias ESM; los scripts ya lo incluyen.
 
-Jest necesita `--experimental-vm-modules` para cargar las dependencias ESM de NestJS 12; los scripts ya incluyen esa opción. La CI reproduce migraciones, permisos, concurrencia, outbox, métricas, propuestas y recorridos de navegador. Los resultados locales y límites de verificación están en [roadmap](docs/roadmap.md).
+## Ejecutar localmente
 
-## Producción
-
-`docker compose up --build` arranca la base y la aplicación compilada en [localhost:3000](http://localhost:3000). Compose está configurado para HTTP local; Railway usa `NODE_ENV=production`, cookie Secure y HTTPS.
-
-Si ya tienes el entorno de desarrollo en ejecución, usa otros puertos para Docker:
+Requisitos: Node.js 24.15 o posterior de la línea 24 y pnpm 12.14. Sin pnpm instalado puedes usar `npx --yes pnpm@12.14.0` en lugar de `pnpm`.
 
 ```powershell
-$env:AZUL_HTTP_PORT='3001'
-$env:AZUL_DB_PORT='55433'
-docker compose up --build
+npm install --global pnpm@12.14.0
+pnpm install --frozen-lockfile
+Copy-Item .env.example .env  # solo la primera vez
+pnpm db:generate
 ```
 
-En ese caso abre [localhost:3001](http://localhost:3001). Compose ajusta automáticamente el origen; `DOCKER_APP_ORIGIN` permite indicar otro nombre de host. Los datos de Docker se conservan en su propio volumen. La construcción Linux, los recorridos de navegador y la persistencia tras reiniciar el contenedor están verificados.
+Deja PostgreSQL local en marcha en una terminal:
 
-Railway: despliega este repositorio con Dockerfile, añade PostgreSQL 17 y configura `DATABASE_URL`, `APP_ORIGIN` con el origen HTTPS público y las variables de IA si procede. La migración se ejecuta antes del arranque y readiness comprueba la base. Mantén **una réplica**. Configura límites de recursos, alertas de gasto y copias de seguridad desde la cuenta del proveedor antes de habilitar una demo pública. Las cuentas y el despliegue no se crean por ejecutar el proyecto localmente.
+```powershell
+pnpm db:local
+```
 
-La imagen conserva el árbol pnpm completo para preservar enlaces y el cliente Prisma generado. Una entrega posterior puede optimizar su tamaño sin cambiar la arquitectura.
+Y en otra:
 
-## Contexto técnico
+```powershell
+pnpm db:migrate
+pnpm dev
+```
 
-- [Instrucciones de trabajo](AGENTS.md)
-- [Producto](PRODUCT.md) y [diseño](DESIGN.md)
-- [Arquitectura y flujos](docs/architecture.md)
-- [Decisiones técnicas](docs/adr/0001-modular-monolith.md)
-- [Entregas y limitaciones](docs/roadmap.md)
+Abre [Azul en local](http://127.0.0.1:4200) y la documentación interactiva de la API en [Swagger](http://127.0.0.1:4200/api/docs). `APP_ORIGIN` debe coincidir con el origen del navegador; por defecto es `http://127.0.0.1:4200`.
 
-El backend guarda estado actual, historial y outbox en transacciones con versión por proyecto. Las métricas distinguen tiempo transcurrido de esfuerzo efectivo; reaperturas y archivo mantienen la primera entrega. Los sockets son avisos para recuperar estado autorizado mediante REST.
+`pnpm db:local` ejecuta binarios reales de PostgreSQL 17 en `127.0.0.1:55432` mediante `embedded-postgres`, un envoltorio de desarrollo que no forma parte de producción. Los datos viven en `.local/postgres`. También sirve cualquier PostgreSQL 17 indicado en `DATABASE_URL`, o `docker compose up -d postgres`.
 
-## Capturas y recorrido
+### Recorrido sugerido
 
-![Tablero de Azul con datos sintéticos](docs/media/board.png)
+1. Pulsa **Explorar la demo**: se crea un proyecto aislado con tareas e historial sintéticos.
+2. Crea una tarea con criterios, comentarios y responsable; muévela arrastrando o con el selector de estado del detalle.
+3. Pulsa **Invitar** y abre el enlace en otra ventana privada: los cambios aparecen en ambas.
+4. Consulta **Métricas** y **Actividad**.
+5. Abre **Asistente IA**, describe una idea, edita las propuestas y acepta las que quieras.
 
-[Vídeo de la demo](docs/media/demo.webm) · [Métricas](docs/media/metrics.png) · [Asistente](docs/media/ai.png) · [Vista móvil](docs/media/mobile.png)
+## IA real y consumo
 
-Puedes regenerar las capturas con `node scripts/capture.mjs` y el vídeo con `node scripts/record-demo.mjs`, con la aplicación local en ejecución. Son recorridos programáticos de la funcionalidad real.
+Configura `OPENAI_API_KEY` solo en el entorno del backend; nunca en el frontend ni en el repositorio. `OPENAI_MODEL` empieza en `gpt-5.4-mini` y las respuestas no se almacenan en OpenAI (`store: false`).
 
-## Limitaciones de la primera versión
+El presupuesto mensual de IA parte de USD 5 y es independiente del alojamiento. Antes de cada llamada se reserva un coste conservador, que se ajusta al uso confirmado; no hay reintentos automáticos de pago. Comprueba los precios configurados en `.env` frente a los del proveedor antes de activar la clave. Cada demo admite tres solicitudes y hay límites adicionales por usuario e IP.
 
-Una instancia; sin edición de texto simultánea a nivel de carácter, correo transaccional, recuperación de contraseña, adjuntos, RAG o migración de demo a cuenta. No se afirma conformidad WCAG sin auditoría. La API real de OpenAI y Railway requieren verificaciones externas indicadas en el roadmap.
+## Despliegue
+
+`docker compose up --build` arranca la aplicación compilada y PostgreSQL en [localhost:3000](http://localhost:3000). Si el entorno de desarrollo ocupa esos puertos, define antes `AZUL_HTTP_PORT` y `AZUL_DB_PORT`.
+
+El repositorio incluye la configuración para Railway ([railway.toml](railway.toml)): imagen Docker, migraciones antes del arranque, comprobación de salud y una sola réplica. La demo pública todavía no está desplegada; los requisitos previos están en el [roadmap](docs/roadmap.md).
+
+## Limitaciones conocidas
+
+Una sola instancia; sin edición simultánea de texto carácter a carácter, correo transaccional, recuperación de contraseña, adjuntos ni conversión de la demo en cuenta. La consulta de documentos con RAG queda para una ampliación posterior. No se declara conformidad WCAG 2.2 AA sin una auditoría completa, aunque el objetivo de diseño la toma como referencia.
+
+## Regenerar capturas y vídeo
+
+Con la aplicación local en marcha, `node scripts/capture.mjs` regenera las capturas y `node scripts/record-demo.mjs` el vídeo. Ambos recorren la funcionalidad real.
