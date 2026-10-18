@@ -9,6 +9,7 @@ import { ProjectEditor } from "@features/projects/project-editor";
 import { TeamPanel } from "@features/projects/team-panel";
 import { HelpPanel } from "@shared/help/help-panel";
 import { SidePanel } from "@shared/side-panel/side-panel";
+import { IconName } from "@shared/icon/icon";
 import { SessionStore } from "../session/session-store";
 import { ShellState } from "./shell-state";
 @Component({
@@ -52,7 +53,7 @@ export class PanelOutlet {
       (
         ({ task: "file", ai: "sparkle", invite: "people" }) as Record<
           string,
-          string
+          IconName
         >
       )[this.ui.panel() ?? ""] ?? "board",
   );

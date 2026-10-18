@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-const paths: Record<string, string> = {
+const paths = {
   board: "M3 4h18v16H3z M9 4v16 M15 4v16 M5.5 8h1 M11.5 8h1 M17.5 8h1",
   grid: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
   chart: "M4 3v17h17 M8 15v-4 M13 15V7 M18 15v-7",
@@ -35,7 +35,8 @@ const paths: Record<string, string> = {
   file: "M14 2H4v20h16V8z M14 2v6h6 M8 12h8 M8 16h5",
   bell: "M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9 M10 21h4",
   moon: "M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13",
-};
+} as const;
+export type IconName = keyof typeof paths;
 @Component({
   selector: "az-icon",
   standalone: true,
@@ -45,7 +46,7 @@ const paths: Record<string, string> = {
     ":host{display:inline-flex;width:19px;height:19px;flex-shrink:0}svg{display:block;width:100%;height:100%;}",
 })
 export class Icon {
-  @Input() name = "board";
+  @Input() name: IconName = "board";
   get path() {
     return paths[this.name] ?? paths["board"];
   }
