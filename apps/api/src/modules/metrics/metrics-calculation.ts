@@ -45,12 +45,9 @@ export function calculateMetrics(
       t.firstCompletedAt <= now,
   );
   const cycle = completed
-    .filter((t) => t.firstStartedAt)
+    .filter((t) => t.firstStartedAt && t.firstStartedAt <= t.firstCompletedAt!)
     .map((t) =>
-      Math.max(
-        0,
-        (t.firstCompletedAt!.getTime() - t.firstStartedAt!.getTime()) / hour,
-      ),
+      (t.firstCompletedAt!.getTime() - t.firstStartedAt!.getTime()) / hour,
     );
   const lead = completed.map(
     (t) => (t.firstCompletedAt!.getTime() - t.createdAt.getTime()) / hour,

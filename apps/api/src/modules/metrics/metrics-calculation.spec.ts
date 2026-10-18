@@ -102,6 +102,24 @@ describe("flow metrics", () => {
       28 * 24,
     );
   });
+  it("excludes missing starts and historical starts after the first delivery", () => {
+    const task = {
+      id: "valid", columnId: "active", archived: false,
+      createdAt: date("2026-10-12T12:00:00Z"),
+      firstStartedAt: date("2026-10-13T12:00:00Z"),
+      firstCompletedAt: date("2026-10-14T12:00:00Z"),
+    };
+    const unknown = [
+      { ...task, id: "missing", firstStartedAt: null },
+      { ...task, id: "legacy", firstStartedAt: date("2026-10-15T12:00:00Z") },
+    ];
+    const now = date("2026-10-16T12:00:00Z");
+    expect(calculateMetrics(unknown, columns, [], now).cycleTime).toBeNull();
+    const metrics = calculateMetrics([task, ...unknown], columns, [], now);
+    expect(metrics.cycleTime).toBe(24);
+    expect(metrics.sampleSize).toBe(3);
+    expect(metrics.leadTime).toBe(48);
+  });
   it("uses Mondays in Bogota including Sunday UTC crossing", () => {
     expect(weekKey(date("2026-10-19T02:00:00Z"))).toBe("2026-10-12");
     expect(weekKey(date("2026-10-19T05:00:00Z"))).toBe("2026-10-19");

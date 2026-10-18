@@ -92,7 +92,9 @@ export class TaskCommandsService {
             columnId: column.id,
             firstStartedAt:
               task.firstStartedAt ??
-              (column.category === "ACTIVE" ? new Date() : null),
+              (!task.firstCompletedAt && column.category === "ACTIVE"
+                ? new Date()
+                : null),
             firstCompletedAt:
               task.firstCompletedAt ??
               (column.category === "DONE" ? new Date() : null),

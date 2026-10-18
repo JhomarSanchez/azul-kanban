@@ -334,6 +334,40 @@ describe("PostgreSQL integration", () => {
       await db.project.findUnique({ where: { id: da.projectId } }),
     ).toBeNull();
   });
+  it("preserves an unknown initial cycle when completed tasks are reopened", async () => {
+    const project = (await owner.post("/api/v1/projects")
+      .set("X-CSRF-Token", ownerCsrf)
+      .send({ name: "Ciclos iniciales", description: "" }).expect(201)).body;
+    expect(project.demo).toBe(false);
+    expect(project.expiresAt).toBeNull();
+    const path = `/api/v1/projects/${project.id}`;
+    const state = (await owner.get(`${path}/board`).expect(200)).body;
+    const todo = state.columns.find((c: any) => c.category === "TODO").id;
+    const active = state.columns.find((c: any) => c.category === "ACTIVE").id;
+    const done = state.columns.find((c: any) => c.category === "DONE").id;
+    let version = state.project.version;
+    for (const columnId of [todo, done]) {
+      const response = (await owner.post(`${path}/tasks`)
+        .set("X-CSRF-Token", ownerCsrf)
+        .send({ title: "Entrega sin inicio", columnId, expectedVersion: version++ })
+        .expect(201)).body;
+      const taskId = response.result.id;
+      const move = (destination: string) => owner.post(`${path}/tasks/${taskId}/move`)
+        .set("X-CSRF-Token", ownerCsrf)
+        .send({ columnId: destination, position: 0, expectedVersion: version++ }).expect(201);
+      if (columnId === todo) await move(done);
+      const completed = await db.task.findUniqueOrThrow({ where: { id: taskId } });
+      await move(active);
+      await move(done);
+      const reopened = await db.task.findUniqueOrThrow({ where: { id: taskId } });
+      expect(reopened.firstStartedAt).toBeNull();
+      expect(reopened.firstCompletedAt).toEqual(completed.firstCompletedAt);
+    }
+    const metrics = (await owner.get(`${path}/metrics`).expect(200)).body;
+    expect(metrics.cycleTime).toBeNull();
+    expect(metrics.sampleSize).toBe(2);
+    expect(metrics.reopens).toBe(2);
+  });
   it("reserves budget before admission", async () => {
     const previous = process.env.OPENAI_API_KEY;
     const previousBudget = process.env.AI_MONTHLY_BUDGET_USD;

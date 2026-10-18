@@ -44,6 +44,8 @@ Crear proyectos permanentes requiere una cuenta registrada. El servicio comprueb
 
 Columnas TODO/ACTIVE/DONE. Eventos inmutables guardan fecha, categoría y nombre de columna para no depender de renombrados. Primera entrada a ACTIVE y primera finalización definen el ciclo inicial; creación a primera finalización define entrega. Reaperturas se cuentan aparte. Throughput cuenta primeras finalizaciones por semana en America/Bogota. Duración por columna suma intervalos, incluido el actual; archivo mantiene historial. Métricas sin muestra devuelven null.
 
+Si la primera entrega ocurre sin inicio en ACTIVE, su ciclo inicial permanece desconocido incluso al reabrir. Los registros históricos con inicio posterior a la primera entrega se excluyen del ciclo, sin convertirlos en ceros; siguen contando para entregas y reaperturas.
+
 ## IA
 
 Responses API, modelo configurable, prompts versionados y Zod. Simulador explícito sin clave. Propuestas persistidas; aceptación idempotente y transaccional con expectedVersion. Reservas en un ledger mensual serializado evitan admitir llamadas sobre presupuesto estimado. Las llamadas sin uso confirmado mantienen reserva conservadora. Precios configurables, sin reintentos automáticos pagados. Tokenización aproximada por límite conservador de caracteres; límite real del proveedor para salida. No acceso autónomo a herramientas ni RAG en v1.
