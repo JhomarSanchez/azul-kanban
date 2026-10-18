@@ -4,6 +4,7 @@
 
 A full-stack app to **plan → collaborate → measure → improve**: a Kanban board shared in real time, flow metrics computed on the server, and an AI assistant that proposes tasks a person reviews before they are created.
 
+[![CI](https://github.com/JhomarSanchez/azul-kanban/actions/workflows/ci.yml/badge.svg)](https://github.com/JhomarSanchez/azul-kanban/actions/workflows/ci.yml)
 ![Angular 22](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white)
 ![NestJS 12](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)
 ![PostgreSQL 17](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)

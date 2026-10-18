@@ -4,6 +4,7 @@
 
 Aplicación full stack para **planificar → colaborar → medir → mejorar**: un tablero Kanban compartido en tiempo real, con métricas de flujo calculadas en el servidor y un asistente de IA que propone tareas que una persona revisa antes de crearlas.
 
+[![CI](https://github.com/JhomarSanchez/azul-kanban/actions/workflows/ci.yml/badge.svg)](https://github.com/JhomarSanchez/azul-kanban/actions/workflows/ci.yml)
 ![Angular 22](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white)
 ![NestJS 12](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)
 ![PostgreSQL 17](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)

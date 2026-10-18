@@ -53,6 +53,6 @@ Detectado en la revisión del 2026-10-18; cada punto se cierra con una prueba qu
 
 - OpenAI real: falta una clave de API y una ejecución controlada con presupuesto. Las pruebas de errores del proveedor usan dobles y no realizan llamadas pagadas. Sin clave la aplicación usa simulación.
 - Sin despliegue público por decisión: el proyecto se prueba clonando el repositorio. La IA real requiere que cada persona configure su propia clave.
-- El workflow de GitHub Actions está escrito; su ejecución remota requiere publicar el repositorio. Git está inicializado localmente, sin remoto ni commits automáticos.
+- Repositorio publicado en [GitHub](https://github.com/JhomarSanchez/azul-kanban); el workflow de GitHub Actions se ejecuta en cada push y su resultado aparece en la insignia del README.
 - Accesibilidad: controles de teclado y móvil comprobados; no se declara una auditoría completa WCAG. Imagen Docker con dependencias de compilación conservadas: optimización de tamaño pendiente.
 - Próxima ampliación funcional: RAG con documentos y referencias; luego escalado horizontal si lo justifica el uso.
