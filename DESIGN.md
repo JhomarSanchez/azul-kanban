@@ -211,6 +211,8 @@ El panel mantiene una cabecera con título y cierre, cuerpo desplazable y contex
 
 El contenedor de panel es reutilizable: recibe título, icono, anchura y estado ocupado, proyecta el contenido y devuelve el foco al cerrar. Los contenidos pertenecen a su funcionalidad. Al soltar una tarjeta se conserva su posición provisional hasta confirmar el servidor; el placeholder tiene su altura real. Actualizar tablero muestra un estado ocupado y el icono completo, con movimiento reducido respetado.
 
+Cerrar un detalle de tarea modificado exige confirmar el descarte mediante el diálogo nativo; cancelar conserva todos sus campos y textos pendientes. Guardar no elimina un comentario ni un criterio que aún se esté escribiendo. Los comentarios remotos aparecen sin cerrar ni reiniciar el formulario.
+
 ### Métricas y avisos
 
 Las barras llevan valor y periodo visibles. Un conteo cero produce altura cero; no añadir altura mínima que represente una entrega inexistente. Los avisos son flotantes, con texto, cierre y `role="status"`; error cambia su tratamiento de color. La demo conserva su identificación visible.

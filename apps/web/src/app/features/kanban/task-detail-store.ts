@@ -1,4 +1,4 @@
-import { Injectable, effect, inject, signal } from "@angular/core";
+import { Injectable, effect, inject, signal, untracked } from "@angular/core";
 import { TaskView } from "@azul/contracts";
 import { Api, ApiError } from "@core/http/api";
 import { Notifications } from "@core/notifications/notifications";
@@ -33,6 +33,8 @@ export class TaskDetailStore {
   commentText = "";
   checklistText = "";
   private base?: DraftBase<TaskView>;
+  private cleanForm = "";
+  private commentsRequest = 0;
   taskForm: Draft = {
     title: "",
     description: "",
@@ -50,6 +52,9 @@ export class TaskDetailStore {
       if (!b) {
         this.selected.set(null);
         this.comments.set([]);
+        this.commentText = "";
+        this.checklistText = "";
+        this.cleanForm = "";
       } else if (id) {
         const task = b.tasks.find((t) => t.id === id);
         if (task) this.selected.set(task);
@@ -59,8 +64,33 @@ export class TaskDetailStore {
         }
       }
     });
+    effect(() => {
+      const board = this.boardStore.confirmed();
+      const id = this.selected()?.id;
+      const open = this.ui.panel() === "task";
+      if (board && id && open && board.tasks.some((task) => task.id === id))
+        untracked(() => void this.loadComments(id));
+      else this.commentsRequest++;
+    });
+  }
+  hasUnsavedChanges() {
+    return (
+      this.ui.panel() === "task" &&
+      ((!!this.cleanForm && JSON.stringify(this.taskForm) !== this.cleanForm) ||
+        !!this.commentText.trim() ||
+        !!this.checklistText.trim())
+    );
+  }
+  confirmDiscard() {
+    return (
+      !this.hasUnsavedChanges() ||
+      window.confirm(
+        "Tienes cambios sin guardar. ¿Quieres descartarlos? El comentario y el criterio que estés escribiendo también se perderán.",
+      )
+    );
   }
   openTask(task: TaskView) {
+    if (!this.confirmDiscard()) return;
     this.selected.set(task);
     this.rebase(task);
     this.taskForm = {
@@ -75,23 +105,29 @@ export class TaskDetailStore {
     };
     this.comments.set([]);
     this.commentText = "";
+    this.checklistText = "";
+    this.cleanForm = JSON.stringify(this.taskForm);
     this.ui.panel.set("task");
-    void this.loadComments(task.id);
   }
   async loadComments(id: string) {
     const context = this.boardStore.context();
+    const request = ++this.commentsRequest;
+    const current = () =>
+      context.current() &&
+      this.selected()?.id === id &&
+      this.ui.panel() === "task" &&
+      request === this.commentsRequest;
     try {
       const comments = await this.api.request<CommentView[]>(
         `/projects/${context.id}/tasks/${id}/comments`,
       );
-      if (context.current() && this.selected()?.id === id)
-        this.comments.set(comments);
+      if (current()) this.comments.set(comments);
     } catch (error) {
-      if (context.current() && this.selected()?.id === id)
-        this.notices.error(error);
+      if (current()) this.notices.error(error);
     }
   }
   newTask(columnId?: string) {
+    if (!this.confirmDiscard()) return;
     this.selected.set(null);
     this.base = undefined;
     this.taskForm = {
@@ -108,6 +144,9 @@ export class TaskDetailStore {
       checklist: [],
     };
     this.comments.set([]);
+    this.commentText = "";
+    this.checklistText = "";
+    this.cleanForm = JSON.stringify(this.taskForm);
     this.ui.panel.set("task");
   }
   addChecklist() {
@@ -126,6 +165,8 @@ export class TaskDetailStore {
       const b = this.boardStore.board()!;
       const f = this.taskForm;
       const selected = this.selected();
+      const savedForm = JSON.stringify(f);
+      let created: TaskView | undefined;
       const body = {
         title: f.title,
         description: f.description,
@@ -148,18 +189,26 @@ export class TaskDetailStore {
             "PATCH",
             body,
           );
-        else
-          await this.api.request(`/projects/${b.project.id}/tasks`, "POST", {
-            ...body,
-            columnId: f.columnId,
-          });
+        else {
+          const response = await this.api.request<{ result: TaskView }>(
+            `/projects/${b.project.id}/tasks`,
+            "POST",
+            { ...body, columnId: f.columnId },
+          );
+          created = response.result;
+        }
       } catch (error) {
         conflict = error instanceof ApiError && error.status === 409;
         throw error;
       }
       if (!context.current()) return;
-      this.ui.panel.set(null);
+      this.cleanForm = savedForm;
+      if (!this.hasUnsavedChanges()) this.ui.panel.set(null);
       await this.boardStore.refresh(false);
+      if (!context.current()) return;
+      if (created) this.selected.set(created);
+      const current = this.selected();
+      if (current) this.rebase(current);
       this.notices.show(
         selected ? "Cambios guardados." : "Tarea creada. Un paso más cerca.",
       );
@@ -189,6 +238,7 @@ export class TaskDetailStore {
       : undefined;
   }
   async archiveTask() {
+    if (!this.confirmDiscard()) return;
     await this.boardStore.action(async () => {
       const context = this.boardStore.context();
       await this.api.request(
@@ -210,18 +260,18 @@ export class TaskDetailStore {
     await this.boardStore.action(async () => {
       const context = this.boardStore.context();
       const taskId = this.selected()!.id;
+      const text = this.commentText;
       await this.api.request(
         `/projects/${this.boardStore.board()!.project.id}/tasks/${this.selected()!.id}/comments`,
         "POST",
         {
-          text: this.commentText,
+          text,
           expectedVersion: this.boardStore.board()!.project.version,
         },
       );
       if (!context.current() || this.selected()?.id !== taskId) return;
-      this.commentText = "";
+      if (this.commentText === text) this.commentText = "";
       await this.boardStore.refresh(false);
-      await this.loadComments(taskId);
     });
   }
 }

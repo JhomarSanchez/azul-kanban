@@ -30,7 +30,11 @@ El cliente mantiene un snapshot confirmado y un movimiento pendiente por separad
 
 Los formularios de tarea y columna conservan la versión con la que se abrieron. Los cambios ajenos al elemento editado la avanzan; si otra persona modificó ese mismo elemento, el guardado envía la versión original y el servidor responde 409. Tras recargar, el borrador se conserva y volver a guardar es una decisión explícita. Las ediciones parciales solo modifican los campos enviados.
 
+El detalle de tarea pide confirmar el descarte al cerrar con cambios, comentario o criterio pendientes. Recargar o abandonar la página activa la advertencia nativa del navegador. No se persisten borradores en almacenamiento local. Guardar la tarea conserva abierto el panel si queda texto pendiente; una tarea recién creada conserva su identidad para evitar duplicarla en el siguiente guardado.
+
 Las consultas concurrentes de foco, Socket.IO y actualización manual se agrupan. Se rechazan respuestas de un contexto de proyecto anterior o de una versión inferior. Durante el arrastre se difiere la aplicación de snapshots remotos; la revocación borra el estado inmediatamente. Métricas, actividad, comentarios y respuestas de IA comprueban su contexto antes de actualizar la vista.
+
+Mientras el detalle está abierto, cada snapshot confirmado vuelve a consultar su conversación, también tras reconectar. Los comentarios comprueban además tarea, panel abierto y secuencia de petición para descartar respuestas anteriores. La recarga no reemplaza los campos en edición.
 
 Esta refactorización conserva rutas REST, respuestas, cookies, eventos Socket.IO y el esquema PostgreSQL. La resolución del `.env` y de la SPA funciona tanto desde fuentes como desde la imagen compilada.
 

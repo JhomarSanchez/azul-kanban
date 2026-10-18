@@ -1,4 +1,4 @@
-import { Component, computed, inject } from "@angular/core";
+import { Component, computed, HostListener, inject } from "@angular/core";
 import { AiStore } from "@features/ai";
 import { AiPanel } from "@features/ai/ai-panel";
 import { AuthPanel } from "@features/identity/auth-panel";
@@ -33,6 +33,16 @@ export class PanelOutlet {
   private session = inject(SessionStore);
   private tasks = inject(TaskDetailStore);
   private ai = inject(AiStore);
+  close() {
+    if (this.ui.panel() !== "task" || this.tasks.confirmDiscard()) this.ui.close();
+  }
+  @HostListener("window:beforeunload", ["$event"])
+  beforeUnload(event: BeforeUnloadEvent) {
+    if (this.tasks.hasUnsavedChanges()) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+  }
   readonly busy = computed(
     () => this.board.pending() || this.session.pending() || this.ai.aiLoading(),
   );
