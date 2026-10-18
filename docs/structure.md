@@ -38,7 +38,8 @@ En Angular, el componente raíz solo compone; una tarjeta o un panel se modifica
 
 | Archivo | Responsabilidad |
 |---|---|
-| `README.md` | Entrada al proyecto e instrucciones de uso. |
+| `README.md`, `README.es.md` | Entrada al proyecto e instrucciones de uso, en inglés (la que muestra GitHub) y en español. |
+| `LICENSE` | Licencia MIT del proyecto. |
 | `AGENTS.md` | Instrucciones generales para asistentes de desarrollo. |
 | `PRODUCT.md`, `DESIGN.md` | Contexto de producto y diseño que Impeccable busca en la raíz. |
 | `package.json` | Comandos y dependencias comunes. |
@@ -68,4 +69,4 @@ Estas carpetas no forman parte del código publicado. El editor las oculta para 
 
 Los datos de PostgreSQL ejecutado mediante Compose se guardan en un volumen Docker separado. Reorganizar el repositorio no requiere borrar bases ni volúmenes.
 
-Para abrir el informe del último recorrido de navegador, ejecuta `pnpm test:e2e:report` desde la raíz. Los demás comandos habituales siguen descritos en el [README principal](../README.md).
+Para abrir el informe del último recorrido de navegador, ejecuta `pnpm test:e2e:report` desde la raíz. Los demás comandos habituales siguen descritos en el [README](../README.es.md).

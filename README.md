@@ -1,6 +1,8 @@
-# Azul · Kanban colaborativo con IA
+# Azul — Real-time Kanban where AI suggests and you decide
 
-Aplicación full stack para **planificar → colaborar → medir → mejorar**: un tablero Kanban compartido en tiempo real, con métricas de flujo calculadas en el servidor y un asistente de IA que propone tareas que una persona revisa antes de crearlas.
+**English** · [Español](README.es.md)
+
+A full-stack app to **plan → collaborate → measure → improve**: a Kanban board shared in real time, flow metrics computed on the server, and an AI assistant that proposes tasks a person reviews before they are created.
 
 ![Angular 22](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white)
 ![NestJS 12](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)
@@ -8,140 +10,142 @@ Aplicación full stack para **planificar → colaborar → medir → mejorar**: 
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Socket.IO](https://img.shields.io/badge/Socket.IO-4-010101?logo=socketdotio&logoColor=white)
 
-![Tablero de Azul con datos de demostración](docs/media/board.png)
+![Azul board with demo data](docs/media/board.png)
 
-> Proyecto de portafolio pensado para ejecutarse en local: clónalo y sigue [Ejecutar localmente](#ejecutar-localmente). Los datos de la demo son sintéticos y, sin una clave de OpenAI, el asistente usa una simulación determinista que se identifica como tal en la interfaz.
+> A portfolio project meant to run locally: clone it and follow [Run locally](#run-locally). The interface is in Spanish. Demo data is synthetic and, without an OpenAI key, the assistant uses a deterministic simulation that is labelled as such in the interface.
 
-## Qué demuestra
+## What it demonstrates
 
-| Aspecto | Cómo se resuelve | Dónde mirarlo |
+| Concern | How it is handled | Where to look |
 |---|---|---|
-| Concurrencia sin sobrescrituras | Cada comando envía la versión esperada del tablero; la escritura, el historial y el evento de salida se guardan en una misma transacción. Un conflicto devuelve 409. | [board-transaction.service.ts](apps/api/src/modules/kanban/board-transaction.service.ts) |
-| Tiempo real fiable | Socket.IO solo avisa de cambios; el cliente recarga el estado autorizado por REST. Un outbox en PostgreSQL republica tras reinicios. | [collaboration.gateway.ts](apps/api/src/modules/collaboration/collaboration.gateway.ts), [board-store.ts](apps/web/src/app/features/kanban/board-store.ts) |
-| Arrastre sin parpadeo | El movimiento pendiente es una proyección visual separada del estado confirmado; un resultado incierto se verifica sin reenviar el comando. | [movement.ts](apps/web/src/app/features/kanban/movement.ts), [ADR 0003](docs/adr/0003-feature-boundaries-and-pending-moves.md) |
-| IA que propone, personas que deciden | Salidas estructuradas validadas con Zod, propuestas editables, aceptación idempotente y presupuesto mensual reservado antes de cada llamada. | [ai.service.ts](apps/api/src/modules/ai/ai.service.ts), [ai-budget.service.ts](apps/api/src/modules/ai/ai-budget.service.ts) |
-| Métricas reproducibles | Ciclo, entrega, throughput semanal en America/Bogota, WIP y permanencia por columna como funciones puras, con reaperturas contadas aparte. | [metrics-calculation.ts](apps/api/src/modules/metrics/metrics-calculation.ts) |
-| Seguridad | Argon2id, sesiones opacas guardadas como hash, cookie HttpOnly, CSRF y comprobación de origen; roles comprobados en HTTP y en sockets. | [identity](apps/api/src/modules/identity), [project-access.service.ts](apps/api/src/modules/projects/project-access.service.ts) |
-| Arquitectura modular | Monolito modular: módulos NestJS por funcionalidad y Angular en `core`, `shared` y `features`. ESLint impide que los controladores accedan a la base de datos. | [Arquitectura](docs/architecture.md), [ADR 0001](docs/adr/0001-modular-monolith.md) |
+| Concurrency without lost updates | Every command sends the board's expected version; the write, its history entry and its outbox event are stored in one transaction. A conflict returns 409. | [board-transaction.service.ts](apps/api/src/modules/kanban/board-transaction.service.ts) |
+| Reliable real time | Socket.IO only announces changes; clients reload the authorized state over REST. A PostgreSQL outbox republishes events after restarts. | [collaboration.gateway.ts](apps/api/src/modules/collaboration/collaboration.gateway.ts), [board-store.ts](apps/web/src/app/features/kanban/board-store.ts) |
+| Flicker-free drag and drop | A pending move is a visual projection kept apart from the confirmed state; an uncertain result is checked by reading, never by resending the command. | [movement.ts](apps/web/src/app/features/kanban/movement.ts), [ADR 0003](docs/adr/0003-feature-boundaries-and-pending-moves.md) |
+| AI proposes, people decide | Structured outputs validated with Zod, editable proposals, idempotent acceptance and a monthly budget reserved before each call. | [ai.service.ts](apps/api/src/modules/ai/ai.service.ts), [ai-budget.service.ts](apps/api/src/modules/ai/ai-budget.service.ts) |
+| Reproducible metrics | Cycle time, lead time, weekly throughput in America/Bogota, WIP and time per column as pure functions, with reopened tasks counted separately. | [metrics-calculation.ts](apps/api/src/modules/metrics/metrics-calculation.ts) |
+| Security | Argon2id, opaque sessions stored as hashes, HttpOnly cookie, CSRF and origin checks; roles enforced over HTTP and on sockets. | [identity](apps/api/src/modules/identity), [project-access.service.ts](apps/api/src/modules/projects/project-access.service.ts) |
+| Modular architecture | Modular monolith: one NestJS module per feature and Angular split into `core`, `shared` and `features`. ESLint stops controllers from reaching the database. | [Architecture](docs/architecture.md), [ADR 0001](docs/adr/0001-modular-monolith.md) |
 
-## Funcionalidades
+## Features
 
-- **Proyectos y equipo:** cuentas con correo y contraseña, roles de propietario, miembro y observador, e invitaciones por enlace con caducidad y revocación.
-- **Tablero:** columnas configurables con límites WIP, tareas con prioridad, etiquetas, responsable, fecha límite, criterios de aceptación y comentarios. Las tareas se mueven arrastrando o desde un selector accesible por teclado.
-- **Colaboración:** cambios visibles en otros navegadores sin recargar, recuperación al reconectar y conflictos explicados en lugar de perdidos.
-- **Métricas e historial:** panel de flujo y actividad cronológica; archivar una tarea conserva su historial.
-- **Asistente IA:** convierte una idea en tareas revisables y analiza el flujo del tablero con referencias a tareas y métricas reales.
-- **Demo sin registro:** cada visitante recibe un proyecto aislado con datos sintéticos que caduca a las 24 horas.
+- **Projects and teams:** email and password accounts; owner, member and viewer roles; invitation links that expire and can be revoked.
+- **Board:** configurable columns with WIP limits; tasks with priority, labels, assignee, due date, acceptance criteria and comments. Tasks move by drag and drop or through a keyboard-accessible selector.
+- **Collaboration:** changes appear in other browsers without reloading, state recovers after reconnecting, and conflicts are explained instead of silently lost.
+- **Metrics and history:** a flow dashboard and a chronological activity feed; archiving a task keeps its history.
+- **AI assistant:** turns an idea into reviewable tasks and analyses the board's flow with references to real tasks and metrics.
+- **No-signup demo:** each visitor gets an isolated project with synthetic data that expires after 24 hours.
 
-| Métricas | Asistente IA | Móvil |
+| Metrics | AI assistant | Mobile |
 |---|---|---|
-| ![Métricas de flujo](docs/media/metrics.png) | ![Propuesta del asistente IA](docs/media/ai.png) | ![Tablero en móvil](docs/media/mobile.png) |
+| ![Flow metrics](docs/media/metrics.png) | ![AI assistant proposal](docs/media/ai.png) | ![Board on mobile](docs/media/mobile.png) |
 
-[Ver el vídeo del recorrido](docs/media/demo.webm) (WebM, se descarga para reproducirlo).
+[Watch the walkthrough video](docs/media/demo.webm) (WebM, downloads to play).
 
-## Arquitectura
+## Architecture
 
 ```mermaid
 flowchart LR
-  Angular -->|REST /api/v1: consultas y comandos| NestJS
-  NestJS -->|Socket.IO: avisos de cambio| Angular
-  NestJS -->|Prisma: estado, historial y outbox| PostgreSQL[(PostgreSQL 17)]
+  Angular -->|REST /api/v1: queries and commands| NestJS
+  NestJS -->|Socket.IO: change notices| Angular
+  NestJS -->|Prisma: state, history and outbox| PostgreSQL[(PostgreSQL 17)]
   NestJS -->|Responses API| OpenAI
 ```
 
-Una sola instancia de NestJS sirve la interfaz Angular, la API REST y Socket.IO bajo el mismo origen. PostgreSQL es la fuente de verdad y no se necesita Redis para una instancia. Los contratos compartidos son esquemas Zod puros en `packages/contracts`.
+A single NestJS instance serves the Angular app, the REST API and Socket.IO from one origin. PostgreSQL is the source of truth, and no Redis is needed for a single instance. Shared contracts are plain Zod schemas in `packages/contracts`.
 
-La [documentación técnica](docs/README.md) recoge la [arquitectura](docs/architecture.md), las [decisiones (ADR)](docs/adr/), el [mapa del repositorio](docs/structure.md) y el [estado del proyecto](docs/roadmap.md).
+The technical documentation is written in Spanish: [index](docs/README.md), [architecture](docs/architecture.md), [decision records](docs/adr/), [repository map](docs/structure.md) and [project status](docs/roadmap.md).
 
-| Capa | Tecnología |
+| Layer | Technology |
 |---|---|
-| Frontend | Angular 22 standalone, Signals, Angular CDK (arrastre y accesibilidad), CSS propio con tokens |
-| Backend | NestJS 12 sobre Node.js 24, Socket.IO 4, OpenAPI |
-| Datos | PostgreSQL 17, Prisma 7 |
-| IA | SDK oficial de OpenAI, Responses API con salidas estructuradas |
-| Contratos | Zod 4 compartido entre frontend y backend |
-| Pruebas | Jest, Vitest, Playwright |
-| Operación | Docker multi-stage, Docker Compose, GitHub Actions |
+| Frontend | Angular 22 standalone components, Signals, Angular CDK (drag and drop, accessibility), custom CSS with design tokens |
+| Backend | NestJS 12 on Node.js 24, Socket.IO 4, OpenAPI |
+| Data | PostgreSQL 17, Prisma 7 |
+| AI | Official OpenAI SDK, Responses API with structured outputs |
+| Contracts | Zod 4 shared by frontend and backend |
+| Testing | Jest, Vitest, Playwright |
+| Tooling | Multi-stage Docker, Docker Compose, GitHub Actions |
 
-## Calidad y pruebas
+## Quality and tests
 
-Verificado el 2026-10-18: typecheck, ESLint y compilación correctos; **29 pruebas unitarias**, **14 de integración** sobre PostgreSQL real y **14 recorridos de navegador**. Estos cubren sincronización entre dos navegadores, revocación de acceso, arrastre con la respuesta retenida, conflictos y WIP, móvil y teclado. El detalle y los límites de la verificación están en el [roadmap](docs/roadmap.md).
+Verified on 2026-10-18: typecheck, ESLint and builds pass; **29 unit tests**, **14 integration tests** against a real PostgreSQL database and **14 browser journeys**. The journeys cover two-browser sync, access revocation, drag and drop with the HTTP response held back, conflicts and WIP limits, mobile and keyboard use. Details and limits are in the [roadmap](docs/roadmap.md).
 
-```powershell
+```bash
 pnpm typecheck
 pnpm lint
 pnpm test
 pnpm build
 ```
 
-Las pruebas de integración solo modifican una base dedicada cuyo nombre termina en `_test`:
+Integration tests only touch a dedicated database whose name ends in `_test`:
 
-```powershell
-$env:DATABASE_URL='postgresql://azul:azul_local_only@127.0.0.1:55432/azul_test'
-pnpm db:migrate
-pnpm test:integration
-Remove-Item Env:DATABASE_URL
+```bash
+DATABASE_URL='postgresql://azul:azul_local_only@127.0.0.1:55432/azul_test' pnpm db:migrate
+DATABASE_URL='postgresql://azul:azul_local_only@127.0.0.1:55432/azul_test' pnpm test:integration
 ```
 
-Con la aplicación y la base en marcha:
+With the app and database running:
 
-```powershell
+```bash
 pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Los informes se guardan en `.local/reports/`; ábrelos con `pnpm test:e2e:report`. Jest se ejecuta con `--experimental-vm-modules` porque NestJS 12 usa dependencias ESM; los scripts ya lo incluyen.
+Reports are written to `.local/reports/`; open them with `pnpm test:e2e:report`. Jest runs with `--experimental-vm-modules` because NestJS 12 ships ESM dependencies; the scripts already pass it.
 
-## Ejecutar localmente
+## Run locally
 
-Requisitos: Node.js 24.15 o posterior de la línea 24 y pnpm 12.14. Sin pnpm instalado puedes usar `npx --yes pnpm@12.14.0` en lugar de `pnpm`.
+Requirements: Node.js 24.15 or later in the 24 line, and pnpm 12.14. Without pnpm installed you can use `npx --yes pnpm@12.14.0` instead of `pnpm`.
 
-```powershell
+```bash
 npm install --global pnpm@12.14.0
 pnpm install --frozen-lockfile
-Copy-Item .env.example .env  # solo la primera vez
+cp .env.example .env   # first time only; PowerShell: Copy-Item .env.example .env
 pnpm db:generate
 ```
 
-Deja PostgreSQL local en marcha en una terminal:
+Keep local PostgreSQL running in one terminal:
 
-```powershell
+```bash
 pnpm db:local
 ```
 
-Y en otra:
+And in another:
 
-```powershell
+```bash
 pnpm db:migrate
 pnpm dev
 ```
 
-Abre [Azul en local](http://127.0.0.1:4200) y la documentación interactiva de la API en [Swagger](http://127.0.0.1:4200/api/docs). `APP_ORIGIN` debe coincidir con el origen del navegador; por defecto es `http://127.0.0.1:4200`.
+Open [Azul locally](http://127.0.0.1:4200) and the interactive API docs in [Swagger](http://127.0.0.1:4200/api/docs). `APP_ORIGIN` must match the browser origin; it defaults to `http://127.0.0.1:4200`.
 
-`pnpm db:local` ejecuta binarios reales de PostgreSQL 17 en `127.0.0.1:55432` mediante `embedded-postgres`, un envoltorio de desarrollo que no forma parte de producción. Los datos viven en `.local/postgres`. También sirve cualquier PostgreSQL 17 indicado en `DATABASE_URL`, o `docker compose up -d postgres`.
+`pnpm db:local` runs real PostgreSQL 17 binaries on `127.0.0.1:55432` through `embedded-postgres`, a development wrapper that is not part of production. Data lives in `.local/postgres`. Any PostgreSQL 17 set in `DATABASE_URL` also works, as does `docker compose up -d postgres`.
 
-### Recorrido sugerido
+### Suggested walkthrough
 
-1. Pulsa **Explorar la demo**: se crea un proyecto aislado con tareas e historial sintéticos.
-2. Crea una tarea con criterios, comentarios y responsable; muévela arrastrando o con el selector de estado del detalle.
-3. Pulsa **Invitar** y abre el enlace en otra ventana privada: los cambios aparecen en ambas.
-4. Consulta **Métricas** y **Actividad**.
-5. Abre **Asistente IA**, describe una idea, edita las propuestas y acepta las que quieras.
+1. Click **Explorar la demo** to create an isolated project with synthetic tasks and history.
+2. Create a task with criteria, comments and an assignee; move it by dragging or with the status selector in its detail panel.
+3. Click **Invitar** and open the link in another private window: changes show up in both.
+4. Check **Métricas** and **Actividad**.
+5. Open **Asistente IA**, describe an idea, edit the proposals and accept the ones you want.
 
-## IA real con tu propia clave
+## Real AI with your own key
 
-El repositorio no incluye ninguna clave. Para usar OpenAI en lugar de la simulación, añade tu propia `OPENAI_API_KEY` al `.env` local, que Git ignora, y reinicia la API. La clave solo vive en el backend; nunca llega al navegador. `OPENAI_MODEL` empieza en `gpt-5.4-mini` y las respuestas no se almacenan en OpenAI (`store: false`).
+The repository contains no API key. To use OpenAI instead of the simulation, add your own `OPENAI_API_KEY` to the local `.env`, which Git ignores, and restart the API. The key stays on the backend and never reaches the browser. `OPENAI_MODEL` defaults to `gpt-5.4-mini`, and responses are not stored by OpenAI (`store: false`).
 
-El presupuesto mensual de IA parte de USD 5. Antes de cada llamada se reserva un coste conservador, que se ajusta al uso confirmado; no hay reintentos automáticos de pago. Comprueba los precios configurados en `.env` frente a los del proveedor antes de activar la clave. Cada demo admite tres solicitudes y hay límites adicionales por usuario e IP.
+The monthly AI budget starts at USD 5. A conservative cost is reserved before each call and adjusted to the confirmed usage; there are no automatic paid retries. Check the prices configured in `.env` against the provider's before enabling a key. Each demo allows three requests, with additional per-user and per-IP limits.
 
-## Ejecutar con Docker
+## Run with Docker
 
-Como alternativa a la instalación con pnpm, `docker compose up --build` arranca la aplicación compilada y PostgreSQL en [localhost:3000](http://localhost:3000). Si el entorno de desarrollo ocupa esos puertos, define antes `AZUL_HTTP_PORT` y `AZUL_DB_PORT`.
+As an alternative to installing pnpm, `docker compose up --build` starts the compiled app and PostgreSQL at [localhost:3000](http://localhost:3000). If the development setup already uses those ports, set `AZUL_HTTP_PORT` and `AZUL_DB_PORT` first.
 
-## Limitaciones conocidas
+## Known limitations
 
-Una sola instancia; sin edición simultánea de texto carácter a carácter, correo transaccional, recuperación de contraseña, adjuntos ni conversión de la demo en cuenta. La consulta de documentos con RAG queda para una ampliación posterior. No se declara conformidad WCAG 2.2 AA sin una auditoría completa, aunque el objetivo de diseño la toma como referencia.
+Single instance; no character-level simultaneous text editing, transactional email, password recovery, attachments, or converting a demo into an account. Document search with RAG is left for a later extension. WCAG 2.2 AA is the design target, but no conformance is claimed without a full audit.
 
-## Regenerar capturas y vídeo
+## Regenerate screenshots and video
 
-Con la aplicación local en marcha, `node scripts/capture.mjs` regenera las capturas y `node scripts/record-demo.mjs` el vídeo. Ambos recorren la funcionalidad real.
+With the app running locally, `node scripts/capture.mjs` regenerates the screenshots and `node scripts/record-demo.mjs` the video. Both drive the real app.
+
+## License
+
+[MIT](LICENSE) © 2026 Jhomar Sanchez.
