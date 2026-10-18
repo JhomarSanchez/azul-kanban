@@ -45,7 +45,6 @@ En Angular, el componente raíz solo compone; una tarjeta o un panel se modifica
 | `pnpm-workspace.yaml` | Declara los paquetes del monorepo y las compilaciones de dependencias permitidas. |
 | `pnpm-lock.yaml` | Fija las dependencias para instalaciones reproducibles; lo mantiene pnpm. |
 | `Dockerfile`, `compose.yaml` | Construcción de la imagen y ejecución local con PostgreSQL. |
-| `railway.toml` | Configuración del futuro despliegue en Railway. |
 | `.env.example` | Variables de entorno de ejemplo, sin credenciales reales. |
 | `.gitignore`, `.dockerignore` | Archivos que deben quedar fuera de Git y del contexto Docker. |
 

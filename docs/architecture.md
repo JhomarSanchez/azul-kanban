@@ -56,4 +56,4 @@ Responses API, modelo configurable, prompts versionados y Zod. Simulador explíc
 
 ## Operación
 
-Railway previsto: una instancia y PostgreSQL separado. Docker multi-stage, Compose y alternativa de PostgreSQL local mediante wrapper de desarrollo. No usar el wrapper en producción. Health/readiness, request IDs y logs sin secretos. Ver README para ejecución. Credenciales Railway/OpenAI y un presupuesto de alojamiento son dependencias externas; ninguna publicación se considera hecha por existir un Dockerfile.
+El proyecto se distribuye como repositorio para ejecutar en local; no hay despliegue público. Docker multi-stage y Compose levantan la aplicación compilada con PostgreSQL; la alternativa sin Docker usa PostgreSQL local mediante un wrapper de desarrollo, que no debe usarse en producción. Health/readiness, request IDs y logs sin secretos. Cualquier despliegue futuro debe mantener una sola instancia (ver ADR 0001). Ver README para ejecución.

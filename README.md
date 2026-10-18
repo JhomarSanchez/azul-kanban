@@ -10,7 +10,7 @@ Aplicación full stack para **planificar → colaborar → medir → mejorar**: 
 
 ![Tablero de Azul con datos de demostración](docs/media/board.png)
 
-> Proyecto de portafolio. Los datos de la demo son sintéticos y, sin una clave de OpenAI, el asistente usa una simulación determinista que se identifica como tal en la interfaz.
+> Proyecto de portafolio pensado para ejecutarse en local: clónalo y sigue [Ejecutar localmente](#ejecutar-localmente). Los datos de la demo son sintéticos y, sin una clave de OpenAI, el asistente usa una simulación determinista que se identifica como tal en la interfaz.
 
 ## Qué demuestra
 
@@ -128,17 +128,15 @@ Abre [Azul en local](http://127.0.0.1:4200) y la documentación interactiva de l
 4. Consulta **Métricas** y **Actividad**.
 5. Abre **Asistente IA**, describe una idea, edita las propuestas y acepta las que quieras.
 
-## IA real y consumo
+## IA real con tu propia clave
 
-Configura `OPENAI_API_KEY` solo en el entorno del backend; nunca en el frontend ni en el repositorio. `OPENAI_MODEL` empieza en `gpt-5.4-mini` y las respuestas no se almacenan en OpenAI (`store: false`).
+El repositorio no incluye ninguna clave. Para usar OpenAI en lugar de la simulación, añade tu propia `OPENAI_API_KEY` al `.env` local, que Git ignora, y reinicia la API. La clave solo vive en el backend; nunca llega al navegador. `OPENAI_MODEL` empieza en `gpt-5.4-mini` y las respuestas no se almacenan en OpenAI (`store: false`).
 
-El presupuesto mensual de IA parte de USD 5 y es independiente del alojamiento. Antes de cada llamada se reserva un coste conservador, que se ajusta al uso confirmado; no hay reintentos automáticos de pago. Comprueba los precios configurados en `.env` frente a los del proveedor antes de activar la clave. Cada demo admite tres solicitudes y hay límites adicionales por usuario e IP.
+El presupuesto mensual de IA parte de USD 5. Antes de cada llamada se reserva un coste conservador, que se ajusta al uso confirmado; no hay reintentos automáticos de pago. Comprueba los precios configurados en `.env` frente a los del proveedor antes de activar la clave. Cada demo admite tres solicitudes y hay límites adicionales por usuario e IP.
 
-## Despliegue
+## Ejecutar con Docker
 
-`docker compose up --build` arranca la aplicación compilada y PostgreSQL en [localhost:3000](http://localhost:3000). Si el entorno de desarrollo ocupa esos puertos, define antes `AZUL_HTTP_PORT` y `AZUL_DB_PORT`.
-
-El repositorio incluye la configuración para Railway ([railway.toml](railway.toml)): imagen Docker, migraciones antes del arranque, comprobación de salud y una sola réplica. La demo pública todavía no está desplegada; los requisitos previos están en el [roadmap](docs/roadmap.md).
+Como alternativa a la instalación con pnpm, `docker compose up --build` arranca la aplicación compilada y PostgreSQL en [localhost:3000](http://localhost:3000). Si el entorno de desarrollo ocupa esos puertos, define antes `AZUL_HTTP_PORT` y `AZUL_DB_PORT`.
 
 ## Limitaciones conocidas
 
